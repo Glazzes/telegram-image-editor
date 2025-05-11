@@ -1,0 +1,64 @@
+import React, { useImperativeHandle, useRef } from "react";
+import { View } from "react-native";
+import { makeImageFromView, Skia } from "@shopify/react-native-skia";
+import { toPng } from "html-to-image";
+
+import { useCustomDimensions } from "@commons/hooks/useCustomsDimensions";
+
+import Appbar from "./Appbar";
+import DrawingLayer from "./DrawingLayer";
+import Controls from "./Controlts";
+import StrokeContainer from "./StrokeContainer";
+import { RootCopyRef } from "./types";
+
+const RootCopy = (_: unknown, ref: React.ForwardedRef<RootCopyRef>) => {
+  const rootRef = useRef<View>(null);
+
+  const { width, height } = useCustomDimensions();
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      async takeSnapshot() {
+        try {
+          const image = await makeImageFromView(rootRef, async (node) => {
+            let base64 = await toPng(node.current! as unknown as HTMLElement);
+            base64 = base64.replace("data:image/png;base64,", "");
+            console.log(base64);
+
+            const data = Skia.Data.fromBase64(base64);
+            return Skia.Image.MakeImageFromEncoded(data);
+          });
+
+          if (image === null) {
+            throw new Error("Root snapshot error");
+          }
+
+          return image;
+        } catch (e) {
+          throw e;
+        }
+      },
+    }),
+    [rootRef],
+  );
+
+  return (
+    <View
+      ref={rootRef}
+      style={{
+        width,
+        height,
+        backgroundColor: "#000",
+        position: "absolute",
+      }}
+    >
+      <Appbar />
+      <DrawingLayer />
+      <StrokeContainer />
+      <Controls />
+    </View>
+  );
+};
+
+export default React.forwardRef<RootCopyRef>(RootCopy);
