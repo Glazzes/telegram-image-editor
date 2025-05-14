@@ -30,9 +30,9 @@ const CircleShapePreview: React.FC<CircleShapePreviewProps> = ({
   canvasSize,
 }) => {
   const resetShapeStore = useShapeStore((state) => state.resetShapeStore);
-  const pushToRecord = useRecordStore((state) => state.pushToRecord);
+  const pushToRecord = useRecordStore((state) => state.push);
   const { color, strokeWidth } = useStrokeWidthStore();
-  const { addStroke, setActiveStrokeType } = useStrokeStore();
+  const { add: addStroke, setActiveType: setActiveStrokeType } = useStrokeStore();
 
   const center: Vector<number> = {
     x: canvasSize.width / 2,

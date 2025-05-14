@@ -7,9 +7,9 @@ type Record = {
 
 type RecordStore = {
   record: Record[];
-  pushToRecord: (newRecord: Record) => void;
-  popFromRecord: () => Record | undefined;
-  resetRecord: () => void;
+  push: (newRecord: Record) => void;
+  pop: () => Record | undefined;
+  reset: () => void;
 };
 
 // Keeps a record of the order in which elements are added to the canvas by the user
@@ -17,11 +17,11 @@ export const useRecordStore = create<RecordStore>()((set, get) => {
   return {
     record: [],
 
-    pushToRecord(newRecord) {
+    push(newRecord) {
       set((state) => ({ record: [...state.record, newRecord] }));
     },
 
-    popFromRecord() {
+    pop() {
       const history = get().record;
       const last = history.pop();
 
@@ -29,7 +29,7 @@ export const useRecordStore = create<RecordStore>()((set, get) => {
       return last;
     },
 
-    resetRecord() {
+    reset() {
       set(() => ({ record: [] }));
     },
   };

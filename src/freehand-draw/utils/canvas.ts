@@ -27,6 +27,7 @@ import {
 } from "../types";
 
 type StrokeDrawOptions = {
+  surface: SkSurface;
   baseLayer: SkImage;
   strokes: Stroke[];
   scale: number;
@@ -183,13 +184,8 @@ function drawSimple(canvas: SkCanvas, stroke: SimpleStroke, scale: number) {
   canvas.restore();
 }
 
-export function drawStrokesAsImage(options: StrokeDrawOptions): string {
-  const { strokes, scale, baseLayer } = options;
-
-  const surface = Skia.Surface.MakeOffscreen(
-    baseLayer.width(),
-    baseLayer.height(),
-  )!;
+export function drawStrokesToCanvas(options: StrokeDrawOptions): string {
+  const { surface, strokes, scale, baseLayer } = options;
 
   const canvas = surface.getCanvas();
 

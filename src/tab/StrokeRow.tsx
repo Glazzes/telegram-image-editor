@@ -37,7 +37,7 @@ const buttons: StrokeButtonData[] = [
 
 const StrokeRow: React.FC<StrokeRowProps> = ({ itemSize, availableSpace }) => {
   const { openMenu } = useShapeMenu();
-  const activeStrokeType = useStrokeStore((state) => state.activeStrokeType);
+  const activeStrokeType = useStrokeStore((state) => state.activeType);
 
   const lastShapeType = useShapeStore((state) => {
     const length = state.shapeTypes.length;

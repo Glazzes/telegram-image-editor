@@ -14,6 +14,7 @@ import {
   SkPath,
   useCanvasRef,
 } from "@shopify/react-native-skia";
+import { useShallow } from "zustand/react/shallow";
 
 import { useRecordStore } from "@commons/store/useRecordStore";
 import { Size, Vector } from "@commons/types";
@@ -28,10 +29,15 @@ import ThicknessContainer from "@freehand-draw/components/stroke-width-slider/Th
 import CircleShapePreview from "@freehand-draw/components/previews/CircleShapePreview";
 import StarShapePreview from "@freehand-draw/components/previews/StarShapePreview";
 import ArrowShapePreview from "@freehand-draw/components/previews/ArrowShapePreview";
+
+import { useStickerStore } from "@stickers/store/stickerStore";
+import Sticker from "@stickers/components/Sticker";
+
 import {
   emitCanvasSnapshotEvent,
   listenToOpenSheetEvent,
 } from "@color-picker/utils/emitter";
+import { useStickerIndexing } from "@stickers/hooks/useStickerIndexing";
 
 type DrawingLayerProps = {
   baseLayer: SkImage;
@@ -59,19 +65,35 @@ const DrawingLayer: React.FC<DrawingLayerProps> = ({
   const canvasRef = useCanvasRef();
   const canvasContainerRef = useAnimatedRef();
 
-  const { activeStrokeType, strokes, addStroke } = useStrokeStore();
   const { color, strokeWidth, doubleStrokeWidth } = useStrokeWidthStore();
 
+  const stickerStore = useStickerStore(
+    useShallow((state) => ({
+      stickers: state.stickers,
+      activeId: state.activeId,
+    })),
+  );
+
+  const strokeStore = useStrokeStore(
+    useShallow((state) => ({
+      strokes: state.strokes,
+      activeType: state.activeType,
+      add: state.add,
+    })),
+  );
+
   const shapes = useShapeStore((state) => state.shapeTypes);
-  const pushToRecord = useRecordStore((state) => state.pushToRecord);
+  const pushToRecord = useRecordStore((state) => state.push);
 
   const path = useSharedValue<SkPath>(Skia.Path.Make());
   const snapshot = useSharedValue<SkImage>(baseLayer);
   const lastPoint = useSharedValue<Vector<number>>({ x: 0, y: 0 });
 
+  useStickerIndexing();
+
   function takeCanvasSnapshot() {
     let nextSnapshot: SkImage | undefined = baseLayer;
-    if (strokes.length !== 0) {
+    if (strokeStore.strokes.length !== 0) {
       const currentSnapshot = canvasRef.current?.makeImageSnapshot();
       nextSnapshot = currentSnapshot ?? baseLayer;
     }
@@ -88,7 +110,7 @@ const DrawingLayer: React.FC<DrawingLayerProps> = ({
     });
 
     const newStroke = createNewStroke({
-      type: activeStrokeType,
+      type: strokeStore.activeType,
       path: pathCopy,
       color: color.value,
       strokeWidth: strokeWidth.value,
@@ -97,9 +119,14 @@ const DrawingLayer: React.FC<DrawingLayerProps> = ({
     });
 
     // If the eraser is the very first stroke, do not append it.
-    if (strokes.length === 0 && activeStrokeType === "eraser") return;
+    if (
+      strokeStore.strokes.length === 0 &&
+      strokeStore.activeType === "eraser"
+    ) {
+      return;
+    }
 
-    addStroke(newStroke);
+    strokeStore.add(newStroke);
     pushToRecord({ type: "stroke", id: newStroke.id });
   }
 
@@ -111,6 +138,8 @@ const DrawingLayer: React.FC<DrawingLayerProps> = ({
       lastPoint.value = { x: e.x, y: e.y };
     })
     .onUpdate((e) => {
+      if (stickerStore.activeId.value !== undefined) return;
+
       const current: Vector<number> = { x: e.x, y: e.y };
 
       const mid = getMiddlePoint(lastPoint.value, current);
@@ -124,7 +153,12 @@ const DrawingLayer: React.FC<DrawingLayerProps> = ({
       lastPoint.value = { x: e.x, y: e.y };
     })
     .onEnd(() => {
-      if (activeStrokeType === "arrow") {
+      if (stickerStore.activeId.value !== undefined) {
+        stickerStore.activeId.value = undefined;
+        return;
+      }
+
+      if (strokeStore.activeType === "arrow") {
         const pointCount = path.value.countPoints();
         const last = path.value.getPoint(pointCount - 1);
         const beforeLast = path.value.getPoint(pointCount - 3);
@@ -137,6 +171,8 @@ const DrawingLayer: React.FC<DrawingLayerProps> = ({
 
       runOnJS(onStrokeEnd)();
     });
+
+  useStickerIndexing();
 
   useEffect(() => {
     const openSheetSub = listenToOpenSheetEvent(() => {
@@ -157,7 +193,12 @@ const DrawingLayer: React.FC<DrawingLayerProps> = ({
 
     return () => clearTimeout(handler);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeStrokeType, strokes.length, canvasSize.width, canvasSize.height]);
+  }, [
+    strokeStore.activeType,
+    strokeStore.strokes.length,
+    canvasSize.width,
+    canvasSize.height,
+  ]);
 
   const isLastACircle = shapes[shapes.length - 1] === "circle";
   const isLastAStar = shapes[shapes.length - 1] === "star";
@@ -178,10 +219,13 @@ const DrawingLayer: React.FC<DrawingLayerProps> = ({
                 fit={"cover"}
               />
 
-              <StrokeList strokes={strokes} canvasSize={canvasSize} />
+              <StrokeList
+                strokes={strokeStore.strokes}
+                canvasSize={canvasSize}
+              />
 
               <StrokePreview
-                type={activeStrokeType}
+                type={strokeStore.activeType}
                 path={path}
                 color={color}
                 strokeWidth={strokeWidth}
@@ -194,17 +238,27 @@ const DrawingLayer: React.FC<DrawingLayerProps> = ({
           </Animated.View>
         </GestureDetector>
 
-        {activeStrokeType === "circle-shape" && isLastACircle ? (
+        {strokeStore.activeType === "circle-shape" && isLastACircle ? (
           <CircleShapePreview key={shapes.length} canvasSize={canvasSize} />
         ) : null}
 
-        {activeStrokeType === "star-shape" && isLastAStar ? (
+        {strokeStore.activeType === "star-shape" && isLastAStar ? (
           <StarShapePreview key={shapes.length} canvasSize={canvasSize} />
         ) : null}
 
-        {activeStrokeType === "arrow-shape" && isLastArrow ? (
+        {strokeStore.activeType === "arrow-shape" && isLastArrow ? (
           <ArrowShapePreview key={shapes.length} canvasSize={canvasSize} />
         ) : null}
+
+        {stickerStore.stickers.map((sticker) => {
+          return (
+            <Sticker
+              key={sticker.id}
+              sticker={sticker}
+              canvasSize={canvasSize}
+            />
+          );
+        })}
       </View>
 
       {containerSize.width === 1 && containerSize.height === 1 ? null : (

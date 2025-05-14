@@ -1,7 +1,7 @@
 import React, { useImperativeHandle, useRef } from "react";
 import { View } from "react-native";
 import { makeImageFromView, Skia } from "@shopify/react-native-skia";
-import { toPng } from "html-to-image";
+import { domToPng } from "modern-screenshot";
 
 import { useCustomDimensions } from "@commons/hooks/useCustomsDimensions";
 
@@ -11,6 +11,12 @@ import Controls from "./Controlts";
 import StrokeContainer from "./StrokeContainer";
 import { RootCopyRef } from "./types";
 
+/*
+ * Due to the limitations of Skia's makeImageFromView and moder-screenshot library, it's not
+ * possible to take screenshots of a canvas elements, therefore as a workaround I built a complete
+ * copy of the Editor layout with zero functionality, to serve as simple dom skeleton hidden behind the
+ * actual app, so we can take screenshots of the "canvas" properly.
+ */
 const RootCopy = (_: unknown, ref: React.ForwardedRef<RootCopyRef>) => {
   const rootRef = useRef<View>(null);
 
@@ -22,7 +28,9 @@ const RootCopy = (_: unknown, ref: React.ForwardedRef<RootCopyRef>) => {
       async takeSnapshot() {
         try {
           const image = await makeImageFromView(rootRef, async (node) => {
-            let base64 = await toPng(node.current! as unknown as HTMLElement);
+            let base64 = await domToPng(
+              node.current! as unknown as HTMLElement,
+            );
             base64 = base64.replace("data:image/png;base64,", "");
             console.log(base64);
 
@@ -50,6 +58,7 @@ const RootCopy = (_: unknown, ref: React.ForwardedRef<RootCopyRef>) => {
         width,
         height,
         backgroundColor: "#000",
+        overflow: "hidden",
         position: "absolute",
       }}
     >

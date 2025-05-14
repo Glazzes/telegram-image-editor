@@ -64,10 +64,10 @@ const getNormalizedAngle = (x: number, y: number): number => {
 };
 
 const StarShapePreview: React.FC<StarShapePreviewProps> = ({ canvasSize }) => {
-  const pushToRecord = useRecordStore((state) => state.pushToRecord);
+  const pushToRecord = useRecordStore((state) => state.push);
   const resetShapeStore = useShapeStore((state) => state.resetShapeStore);
   const { color, strokeWidth } = useStrokeWidthStore();
-  const { addStroke, setActiveStrokeType } = useStrokeStore();
+  const { add: addStroke, setActiveType: setActiveStrokeType } = useStrokeStore();
 
   const center: Vector<number> = {
     x: canvasSize.width / 2,

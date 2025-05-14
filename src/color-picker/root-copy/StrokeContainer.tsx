@@ -24,7 +24,7 @@ const buttons: StrokeButtonData[] = [
 
 const StrokeContainer = () => {
   const { width } = useCustomDimensions();
-  const activeStrokeType = useStrokeStore((state) => state.activeStrokeType);
+  const activeStrokeType = useStrokeStore((state) => state.activeType);
 
   const lastShapeType = useShapeStore((state) => {
     const length = state.shapeTypes.length;
