@@ -7,8 +7,9 @@ type Record = {
 
 type RecordStore = {
   record: Record[];
-  push: (newRecord: Record) => void;
+  add: (newRecord: Record) => void;
   pop: () => Record | undefined;
+  deleteById: (id: string) => void;
   reset: () => void;
 };
 
@@ -17,7 +18,7 @@ export const useRecordStore = create<RecordStore>()((set, get) => {
   return {
     record: [],
 
-    push(newRecord) {
+    add(newRecord) {
       set((state) => ({ record: [...state.record, newRecord] }));
     },
 
@@ -27,6 +28,13 @@ export const useRecordStore = create<RecordStore>()((set, get) => {
 
       set({ record: [...history] });
       return last;
+    },
+
+    deleteById(id) {
+      set((state) => {
+        const filtered = state.record.filter((record) => record.id !== id);
+        return { record: filtered };
+      });
     },
 
     reset() {

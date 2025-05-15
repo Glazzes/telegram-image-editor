@@ -18,6 +18,7 @@ import {
 } from "react-native-gesture-handler";
 import { Canvas, Path, Skia } from "@shopify/react-native-skia";
 import { randomUUID } from "expo-crypto";
+import { useShallow } from "zustand/react/shallow";
 
 import { useVector } from "@commons/hooks/useVector";
 import { useRecordStore } from "@commons/store/useRecordStore";
@@ -81,10 +82,16 @@ type ArrowShapePreviewProps = {
 };
 
 const ArrowShapePreview = ({ canvasSize }: ArrowShapePreviewProps) => {
-  const pushToRecord = useRecordStore((state) => state.push);
+  const addRecord = useRecordStore((state) => state.add);
   const resetShapeStore = useShapeStore((state) => state.resetShapeStore);
   const { color, strokeWidth } = useStrokeWidthStore();
-  const { add: addStroke, setActiveType: setActiveStrokeType } = useStrokeStore();
+
+  const strokeStore = useStrokeStore(
+    useShallow((state) => ({
+      add: state.add,
+      setActiveType: state.setActiveType,
+    })),
+  );
 
   const center: Vector<number> = {
     x: canvasSize.width / 2,
@@ -186,8 +193,8 @@ const ArrowShapePreview = ({ canvasSize }: ArrowShapePreviewProps) => {
       strokeWidth: strokeWidth.value,
     };
 
-    addStroke(newStroke);
-    pushToRecord({ type: "stroke", id: id });
+    strokeStore.add(newStroke);
+    addRecord({ type: "stroke", id: id });
   }
 
   function updateHeadIndicatorPosition() {
@@ -206,7 +213,7 @@ const ArrowShapePreview = ({ canvasSize }: ArrowShapePreviewProps) => {
   }
 
   function unmountComponent() {
-    setActiveStrokeType("simple");
+    strokeStore.setActiveType("simple");
     resetShapeStore();
   }
 

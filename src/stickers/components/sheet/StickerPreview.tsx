@@ -17,16 +17,15 @@ const StickerPreview = (props: StickerPreviewProps) => {
   const { width } = useCustomDimensions();
 
   const addSticker = useStickerStore((state) => state.add);
-  const pushToRecord = useRecordStore((state) => state.push);
+  const addRecord = useRecordStore((state) => state.add);
 
   const size = width / 4;
   const imageSize = size - (theme.spacing.m * 4) / 4;
 
   function onPress() {
     const newId = randomUUID();
-
     addSticker({ id: newId, source: props.source });
-    pushToRecord({ id: newId, type: "sticker" });
+    addRecord({ id: newId, type: "sticker" });
 
     emitCloseStickerBottomSheet();
   }

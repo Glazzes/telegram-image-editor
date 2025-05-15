@@ -7,7 +7,7 @@ type StrokeStore = {
   activeType: Stroke["type"];
   add: (stroke: Stroke) => void;
   deleteById: (id: string) => void;
-  deleteAll: () => void;
+  reset: () => void;
   setActiveType: (type: Stroke["type"]) => void;
 };
 
@@ -30,7 +30,7 @@ export const useStrokeStore = create<StrokeStore>()((set) => {
       });
     },
 
-    deleteAll() {
+    reset() {
       set(() => ({ strokes: [] }));
     },
 

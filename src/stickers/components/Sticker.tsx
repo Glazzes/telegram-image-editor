@@ -21,9 +21,13 @@ import {
 import { useImage } from "@shopify/react-native-skia";
 
 import { useVector } from "@commons/hooks/useVector";
+import { useCustomDimensions } from "@commons/hooks/useCustomsDimensions";
 import { Size, Vector } from "@commons/types";
 
-import { listenToFlipEvent } from "../utils/emitter";
+import {
+  emitOpenStickerContextEvent,
+  listenToFlipStickerEvent,
+} from "../utils/emitter";
 
 import { useStickerStore } from "../store/stickerStore";
 import { TAU, INITIAL_STICKER_SIZE } from "../utils/constants";
@@ -43,11 +47,18 @@ const BORDER_RADIUS = INITIAL_STICKER_SIZE / 2;
 
 const Sticker: React.FC<StickerProps> = ({ sticker, canvasSize }) => {
   const animatedRef = useAnimatedRef();
-  const dimensions = useWindowDimensions();
+  const screenDimensions = useWindowDimensions();
+  const customDimensions = useCustomDimensions();
 
   const { activeId, pressedRecord, stickerData } = useStickerStore();
 
-  const skiaSource = useImage(sticker.source as number);
+  const source =
+    Platform.OS === "web"
+      ? // @ts-ignore
+        `${location.protocol}//${location.host}${sticker.source.uri}`
+      : sticker.source;
+
+  const skiaSource = useImage(source as number);
 
   const translate = useVector(
     sticker.transform?.translate.x ?? 0,
@@ -66,7 +77,9 @@ const Sticker: React.FC<StickerProps> = ({ sticker, canvasSize }) => {
   const rotateY = useSharedValue<number>(sticker.transform?.rotateY ?? 0);
 
   function openStickerMenu(position: Vector<number>) {
-    // TODO
+    const startX = screenDimensions.width / 2 - customDimensions.width / 2;
+
+    emitOpenStickerContextEvent({ x: position.x - startX, y: position.y });
   }
 
   function displayBorder(
@@ -80,33 +93,54 @@ const Sticker: React.FC<StickerProps> = ({ sticker, canvasSize }) => {
     ringScale.value = animate ? withTiming(scaleValue) : scaleValue;
   }
 
-  const pan = Gesture.Pan()
+  function onIndicatorPanStart() {
+    "worklet";
 
+    const measurement = measure(animatedRef)!;
+    center.x.value = measurement.pageX + 0.5;
+    center.y.value = measurement.pageY + 0.5;
+  }
+
+  function onIndicatorPanUpdate(
+    e: PanGestureEvent,
+    direction: "right" | "left",
+  ) {
+    "worklet";
+
+    if (sticker.id !== activeId.value) {
+      return;
+    }
+
+    const normalizedX = e.absoluteX - center.x.value;
+    const normalizedY = -1 * (e.absoluteY - center.y.value);
+
+    const currentRadius = Math.sqrt(normalizedX ** 2 + normalizedY ** 2);
+    const angle = Math.atan2(normalizedY, normalizedX);
+
+    // Both rings are the same, the only difference is the left one has an 180 degrees offset
+    const acc = direction === "right" ? 0 : Math.PI;
+    rotate.value = -1 * ((angle + acc + TAU) % TAU);
+    radius.value = Math.max(BORDER_RADIUS / 2, currentRadius);
+  }
+
+  const pan = Gesture.Pan()
     .maxPointers(1)
     .onStart(() => {
-      // if (blockGestures.value) return;
-
       activeId.value = sticker.id;
       offset.x.value = translate.x.value;
       offset.y.value = translate.y.value;
     })
     .onChange((e) => {
-      // if (blockGestures.value) return;
-
       translate.x.value = offset.x.value + e.translationX;
       translate.y.value = offset.y.value + e.translationY;
     });
 
   const tap = Gesture.Tap()
     .numberOfTaps(1)
+    .onStart(onIndicatorPanStart)
     .onEnd(() => {
-      // if (blockGestures.value) return;
-
       if (activeId.value === sticker.id) {
-        const centerX = center.x.value + translate.x.value;
-        const centerY = center.y.value + translate.y.value;
-
-        runOnJS(openStickerMenu)({ x: centerX, y: centerY });
+        runOnJS(openStickerMenu)({ x: center.x.value, y: center.y.value });
         return;
       }
 
@@ -123,33 +157,15 @@ const Sticker: React.FC<StickerProps> = ({ sticker, canvasSize }) => {
       );
     });
 
-  const onPanUpdate = (e: PanGestureEvent, direction: "right" | "left") => {
-    "worklet";
-
-    // if (sticker.id !== activeId.value || blockGestures.value) return;
-
-    const centerX = center.x.value + translate.x.value;
-    const centerY = center.y.value + translate.y.value;
-
-    const normalizedX = e.absoluteX - centerX;
-    const normalizedY = -1 * (e.absoluteY - centerY);
-
-    const currentRadius = Math.sqrt(normalizedX ** 2 + normalizedY ** 2);
-    const angle = Math.atan2(normalizedY, normalizedX);
-
-    // Both rings are the same, the only difference is the left one has an 180 degrees offset
-    const acc = direction === "right" ? 0 : Math.PI;
-    rotate.value = -1 * ((angle + acc + TAU) % TAU);
-    radius.value = Math.max(BORDER_RADIUS / 2, currentRadius);
-  };
-
   const rightIndicatorPan = Gesture.Pan()
     .hitSlop({ vertical: HITSLOP, horizontal: HITSLOP })
-    .onUpdate((e) => onPanUpdate(e, "right"));
+    .onStart(onIndicatorPanStart)
+    .onUpdate((e) => onIndicatorPanUpdate(e, "right"));
 
   const leftIndicatorPan = Gesture.Pan()
     .hitSlop({ vertical: HITSLOP, horizontal: HITSLOP })
-    .onUpdate((e) => onPanUpdate(e, "left"));
+    .onStart(onIndicatorPanStart)
+    .onUpdate((e) => onIndicatorPanUpdate(e, "left"));
 
   // @ts-ignore
   const stickerStyles = useAnimatedStyle(() => {
@@ -158,7 +174,6 @@ const Sticker: React.FC<StickerProps> = ({ sticker, canvasSize }) => {
     return {
       width: INITIAL_STICKER_SIZE,
       height: INITIAL_STICKER_SIZE,
-      cursor: Platform.OS === "web" ? "grab" : "auto",
       transform: [
         { rotate: `${rotate.value}rad` },
         { rotateY: `${rotateY.value}rad` },
@@ -212,16 +227,6 @@ const Sticker: React.FC<StickerProps> = ({ sticker, canvasSize }) => {
   }, [radius, ringOpacity, rotate, ringScale]);
 
   useDerivedValue(() => {
-    const measurement = measure(animatedRef);
-    if (measurement === null) {
-      return;
-    }
-
-    center.x.value = measurement.pageX + measurement.width / 2;
-    center.y.value = measurement.pageY + measurement.height / 2;
-  }, [animatedRef, dimensions]);
-
-  useDerivedValue(() => {
     if (sticker.id !== activeId.value) return;
 
     const state: StickerState = {
@@ -259,7 +264,7 @@ const Sticker: React.FC<StickerProps> = ({ sticker, canvasSize }) => {
   );
 
   useEffect(() => {
-    const sub = listenToFlipEvent((flipId) => {
+    const sub = listenToFlipStickerEvent((flipId) => {
       if (sticker.id !== flipId) return;
 
       const toAngle = rotateY.value === Math.PI ? 0 : Math.PI;
@@ -277,9 +282,14 @@ const Sticker: React.FC<StickerProps> = ({ sticker, canvasSize }) => {
         style={[styles.ringContainer, styles.ring, styles.center, ringStyles]}
       />
 
+      <Animated.View
+        ref={animatedRef}
+        collapsable={false}
+        style={styles.measureDummy}
+      />
+
       <GestureDetector gesture={Gesture.Race(pan, tap)}>
         <Animated.Image
-          ref={animatedRef}
           source={sticker.source}
           resizeMethod={"scale"}
           style={stickerStyles}
@@ -325,6 +335,11 @@ const styles = StyleSheet.create({
     borderColor: "#fff",
     borderRadius: INDICATOR_SIZE / 2,
     backgroundColor: "#3366ff",
+    position: "absolute",
+  },
+  measureDummy: {
+    width: 1,
+    height: 1,
     position: "absolute",
   },
 });

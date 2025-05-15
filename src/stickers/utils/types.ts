@@ -17,3 +17,8 @@ export type StickerState = {
 
 export type StickerType = Pick<StickerState, "id" | "source"> &
   Partial<StickerState>;
+
+export type StickerContextMenuRefType = {
+  enter: (center: Vector<number>) => void;
+  exit: (onFinishCallback?: () => void) => void;
+};

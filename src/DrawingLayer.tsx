@@ -83,7 +83,7 @@ const DrawingLayer: React.FC<DrawingLayerProps> = ({
   );
 
   const shapes = useShapeStore((state) => state.shapeTypes);
-  const pushToRecord = useRecordStore((state) => state.push);
+  const pushToRecord = useRecordStore((state) => state.add);
 
   const path = useSharedValue<SkPath>(Skia.Path.Make());
   const snapshot = useSharedValue<SkImage>(baseLayer);

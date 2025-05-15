@@ -1,13 +1,16 @@
+import { Vector } from "@commons/types";
 import { EventEmitter, EventSubscription } from "fbemitter";
 
 const emitter = new EventEmitter();
 
 const FLIP_EVENT = "flip";
-export function listenToFlipEvent(cb: (id: string) => void): EventSubscription {
+export function listenToFlipStickerEvent(
+  cb: (id: string) => void,
+): EventSubscription {
   return emitter.addListener(FLIP_EVENT, cb);
 }
 
-export function emitFlipEvent(id: string) {
+export function emitFlipStickerEvent(id: string) {
   emitter.emit(FLIP_EVENT, id);
 }
 
@@ -31,4 +34,17 @@ export function listenToCloseStickerBottomSheet(
   cb: () => void,
 ): EventSubscription {
   return emitter.addListener(CLOSE_STICKER_BOTTOM_SHEET, cb);
+}
+
+type OpenStickerContextMenuCallback = (position: Vector<number>) => void;
+
+const OPEN_STICKER_CONTEXT_MENU = "open-sticker-context-menu";
+export function emitOpenStickerContextEvent(position: Vector<number>) {
+  emitter.emit(OPEN_STICKER_CONTEXT_MENU, position);
+}
+
+export function listenToOpenStickerContextEvent(
+  cb: OpenStickerContextMenuCallback,
+) {
+  return emitter.addListener(OPEN_STICKER_CONTEXT_MENU, cb);
 }

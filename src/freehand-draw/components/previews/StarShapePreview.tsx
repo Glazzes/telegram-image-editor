@@ -15,6 +15,7 @@ import {
   Skia,
 } from "@shopify/react-native-skia";
 import { randomUUID } from "expo-crypto";
+import { useShallow } from "zustand/react/shallow";
 
 import { useVector } from "@commons/hooks/useVector";
 import { useStrokeWidthStore } from "@freehand-draw/store/useStrokeWidthStore";
@@ -64,10 +65,16 @@ const getNormalizedAngle = (x: number, y: number): number => {
 };
 
 const StarShapePreview: React.FC<StarShapePreviewProps> = ({ canvasSize }) => {
-  const pushToRecord = useRecordStore((state) => state.push);
+  const pushToRecord = useRecordStore((state) => state.add);
   const resetShapeStore = useShapeStore((state) => state.resetShapeStore);
   const { color, strokeWidth } = useStrokeWidthStore();
-  const { add: addStroke, setActiveType: setActiveStrokeType } = useStrokeStore();
+
+  const strokeStore = useStrokeStore(
+    useShallow((state) => ({
+      add: state.add,
+      setActiveType: state.setActiveType,
+    })),
+  );
 
   const center: Vector<number> = {
     x: canvasSize.width / 2,
@@ -104,13 +111,13 @@ const StarShapePreview: React.FC<StarShapePreviewProps> = ({ canvasSize }) => {
       color: color.value,
     };
 
-    addStroke(stroke);
+    strokeStore.add(stroke);
     pushToRecord({ type: "stroke", id: id });
   }
 
   // Upon calling it will cause this component to unmoment turning it into a stroke
   function unmountComponent() {
-    setActiveStrokeType("simple");
+    strokeStore.setActiveType("simple");
     resetShapeStore();
   }
 

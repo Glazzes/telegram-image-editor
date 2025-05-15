@@ -31,8 +31,9 @@ const RootCopy = (_: unknown, ref: React.ForwardedRef<RootCopyRef>) => {
             let base64 = await domToPng(
               node.current! as unknown as HTMLElement,
             );
-            base64 = base64.replace("data:image/png;base64,", "");
-            console.log(base64);
+
+            // 22 is length of "data:image/png;base64,p"
+            base64 = base64.slice(22);
 
             const data = Skia.Data.fromBase64(base64);
             return Skia.Image.MakeImageFromEncoded(data);
