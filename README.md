@@ -4,8 +4,8 @@
 - [Features](#features)
 - [Demo](#demo)
 - [How to run](#how-to-run)
-- [License](#license)
 - [Screenshots](#screenshots)
+- [License](#license)
 
 ## About
 I've been using Telegram almost daily since I was introduced to it around early 2021. Never ever in my life I've seen an app with such level of polish and care put onto it.

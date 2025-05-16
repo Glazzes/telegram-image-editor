@@ -13,6 +13,8 @@ import { ShapeMenuProvider } from "./src/menu/ShapeMenuProvider";
 import BottomTab from "./src/tab/BottomTab";
 
 import ColorPickerWrapper from "@color-picker/ColorPickerWrapper";
+import StickerBottomSheetWrapper from "@stickers/StickerBottomSheetWrapper";
+import StickerContextMenuWrapper from "@stickers/StickerContextMenuWrapper";
 
 const IMAGE = "https://m.media-amazon.com/images/I/71qINLp2cXL.jpg";
 
@@ -46,26 +48,30 @@ const TestComponent = () => {
 
   return (
     <ColorPickerWrapper canvasSize={imageSize}>
-      <ShapeMenuProvider>
-        <View
-          style={{
-            width: width,
-            height: height,
-            backgroundColor: "#000",
-          }}
-        >
-          <Appbar />
-          <View style={{ flex: 1 }} onLayout={onLayout}>
-            <DrawingLayer
-              baseLayer={baseLayer}
-              canvasSize={imageSize}
-              containerSize={containerSize}
-            />
-          </View>
-          <BottomTab />
-          <Controls baseLayer={baseLayer} canvasWidth={imageSize.width} />
-        </View>
-      </ShapeMenuProvider>
+      <StickerContextMenuWrapper>
+        <StickerBottomSheetWrapper>
+          <ShapeMenuProvider>
+            <View
+              style={{
+                width: width,
+                height: height,
+                backgroundColor: "#000",
+              }}
+            >
+              <Appbar />
+              <View style={{ flex: 1 }} onLayout={onLayout}>
+                <DrawingLayer
+                  baseLayer={baseLayer}
+                  canvasSize={imageSize}
+                  containerSize={containerSize}
+                />
+              </View>
+              <BottomTab />
+              <Controls baseLayer={baseLayer} canvasWidth={imageSize.width} />
+            </View>
+          </ShapeMenuProvider>
+        </StickerBottomSheetWrapper>
+      </StickerContextMenuWrapper>
     </ColorPickerWrapper>
   );
 };
