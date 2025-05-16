@@ -111,14 +111,14 @@ function drawDouble(canvas: SkCanvas, stroke: DoubleStroke, scale: number) {
   innerPaint.setColor(Skia.Color("#ffffff"));
   innerPaint.setStrokeCap(StrokeCap.Round);
   innerPaint.setStrokeJoin(StrokeJoin.Round);
-  innerPaint.setStyle(PaintStyle.Stroke);
+  innerPaint.setStyle(stroke.isTap ? PaintStyle.Fill : PaintStyle.Stroke);
 
   const outterPaint = Skia.Paint();
   outterPaint.setStrokeWidth(stroke.strokeWidth * 2);
   outterPaint.setColor(Skia.Color(stroke.color));
   outterPaint.setStrokeCap(StrokeCap.Round);
   outterPaint.setStrokeJoin(StrokeJoin.Round);
-  outterPaint.setStyle(PaintStyle.Stroke);
+  outterPaint.setStyle(stroke.isTap ? PaintStyle.Fill : PaintStyle.Stroke);
 
   canvas.scale(scale, scale);
   canvas.drawPath(stroke.path, outterPaint);
@@ -159,7 +159,7 @@ function drawHighlight(
   paint.setStrokeCap(StrokeCap.Butt);
   paint.setStrokeJoin(StrokeJoin.Round);
   paint.setStrokeWidth(stroke.strokeWidth);
-  paint.setStyle(PaintStyle.Stroke);
+  paint.setStyle(stroke.isTap ? PaintStyle.Fill : PaintStyle.Stroke);
   paint.setAlphaf(stroke.opacity);
 
   canvas.scale(scale, scale);
@@ -176,7 +176,7 @@ function drawSimple(canvas: SkCanvas, stroke: SimpleStroke, scale: number) {
   paint.setStrokeCap(StrokeCap.Round);
   paint.setStrokeJoin(StrokeJoin.Round);
   paint.setStrokeWidth(stroke.strokeWidth);
-  paint.setStyle(PaintStyle.Stroke);
+  paint.setStyle(stroke.isTap ? PaintStyle.Fill : PaintStyle.Stroke);
 
   canvas.scale(scale, scale);
   canvas.drawPath(stroke.path, paint);

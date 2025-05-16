@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Telegram Image Editor",
-    "slug": "random-test",
+    "slug": "telegram-image-editor",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -28,6 +28,14 @@
     },
     "plugins": [
       "expo-router"
-    ]
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "061a5456-a378-44b6-8767-9988e0b2d289"
+      }
+    }
   }
 }

@@ -15,7 +15,7 @@ const SimpleStrokeComponent: React.FC<SimpleStrokeProps> = ({ stroke }) => {
       strokeWidth={stroke.strokeWidth}
       strokeCap={"round"}
       strokeJoin={"round"}
-      style={"stroke"}
+      style={stroke.isTap ? "fill" : "stroke"}
     />
   );
 };

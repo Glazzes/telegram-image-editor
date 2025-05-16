@@ -14,16 +14,18 @@ type NewStrokeOptions = {
   color: string;
   baseLayer: SkImage;
   currentSnapshot: SkImage;
+  isTap: boolean;
 };
 
 export const createNewStroke = (options: NewStrokeOptions): Stroke => {
-  const { type, path, strokeWidth, color, baseLayer, currentSnapshot } =
+  const { type, path, strokeWidth, color, baseLayer, currentSnapshot, isTap } =
     options;
 
   const commonStrokeProperties = {
     id: randomUUID(),
     strokeWidth: strokeWidth,
     path: path,
+    isTap: isTap,
   };
 
   if (type === "blur") {

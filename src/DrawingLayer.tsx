@@ -101,7 +101,7 @@ const DrawingLayer: React.FC<DrawingLayerProps> = ({
     snapshot.value = nextSnapshot;
   }
 
-  function onStrokeEnd() {
+  function onStrokeEnd(isTap: boolean) {
     const pathCopy = path.value.copy();
     path.value.reset();
     path.modify((prev) => {
@@ -116,6 +116,7 @@ const DrawingLayer: React.FC<DrawingLayerProps> = ({
       strokeWidth: strokeWidth.value,
       baseLayer: baseLayer,
       currentSnapshot: snapshot.value,
+      isTap,
     });
 
     // If the eraser is the very first stroke, do not append it.
@@ -133,6 +134,7 @@ const DrawingLayer: React.FC<DrawingLayerProps> = ({
   //  Used lazy brush demo as reference for line smoothing
   //  https://github.com/dulnan/lazy-brush-demo/blob/master/src/classes/Scene.js
   const pan = Gesture.Pan()
+    .maxPointers(1)
     .onBegin((e) => {
       path.value.moveTo(e.x, e.y);
       lastPoint.value = { x: e.x, y: e.y };
@@ -169,8 +171,14 @@ const DrawingLayer: React.FC<DrawingLayerProps> = ({
         path.value.lineTo(arrowHead[1].x, arrowHead[1].y);
       }
 
-      runOnJS(onStrokeEnd)();
+      runOnJS(onStrokeEnd)(false);
     });
+
+  const tap = Gesture.Tap().onEnd((e) => {
+    path.value.addCircle(e.x, e.y, strokeWidth.value / 2);
+
+    runOnJS(onStrokeEnd)(true);
+  });
 
   useStickerIndexing();
 
@@ -207,7 +215,7 @@ const DrawingLayer: React.FC<DrawingLayerProps> = ({
   return (
     <View style={styles.container}>
       <View style={styles.layerContainer}>
-        <GestureDetector gesture={pan}>
+        <GestureDetector gesture={Gesture.Exclusive(pan, tap)}>
           <Animated.View ref={canvasContainerRef} collapsable={false}>
             <Canvas ref={canvasRef} style={{ ...canvasSize }}>
               <Image

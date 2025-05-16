@@ -16,7 +16,7 @@ const HightLightStrokeComponent: React.FC<HightLightStrokeComponentProps> = ({
       strokeWidth={stroke.strokeWidth}
       strokeJoin={"round"}
       opacity={stroke.opacity}
-      style={"stroke"}
+      style={stroke.isTap ? "fill" : "stroke"}
     />
   );
 };
