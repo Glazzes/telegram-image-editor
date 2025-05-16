@@ -27,7 +27,7 @@ const StrokeButton: React.FC<StrokeButtonProps> = ({
   style,
 }) => {
   const setActiveStrokeType = useStrokeStore(
-    (state) => state.setActiveStrokeType,
+    (state) => state.setActiveType,
   );
 
   const color = useStrokeWidthStore((state) => state.color);

@@ -31,7 +31,7 @@ const ShapeMenuItem: React.FC<ShapeMenuItemProps> = ({
 
   const addShapeType = useShapeStore((state) => state.addShapeType);
   const setActiveStrokeType = useStrokeStore(
-    (state) => state.setActiveStrokeType,
+    (state) => state.setActiveType,
   );
 
   function setNewShape() {

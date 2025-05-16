@@ -34,7 +34,7 @@ const ThicknessContainer: React.FC<ThicknessContainerProps> = ({
   const { width } = useCustomDimensions();
   const { progress, strokeWidth, doubleStrokeWidth } = useStrokeWidthStore();
 
-  const strokeType = useStrokeStore((state) => state.activeStrokeType);
+  const strokeType = useStrokeStore((state) => state.activeType);
 
   const animationProgress = useSharedValue<number>(0);
 

@@ -8,8 +8,9 @@ import { Size } from "@commons/types";
 import BottomSheet from "./sheet/BottomSheet";
 import EyeDropper from "./eyedropper/EyeDropper";
 import RootCopy from "./root-copy/RootCopy";
-import { RootCopyRef } from "./root-copy/types";
+
 import { listenToOpenEyedropperEvent } from "./utils/emitter";
+import { RootCopyRef } from "./root-copy/types";
 
 type ColorPickerProps = React.PropsWithChildren<{
   canvasSize: Size<number>;

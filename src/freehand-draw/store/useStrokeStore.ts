@@ -4,38 +4,38 @@ import { Stroke } from "../types";
 
 type StrokeStore = {
   strokes: Stroke[];
-  activeStrokeType: Stroke["type"];
-  addStroke: (stroke: Stroke) => void;
-  deleteStrokeById: (id: string) => void;
-  deleteAllStrokes: () => void;
-  setActiveStrokeType: (type: Stroke["type"]) => void;
+  activeType: Stroke["type"];
+  add: (stroke: Stroke) => void;
+  deleteById: (id: string) => void;
+  reset: () => void;
+  setActiveType: (type: Stroke["type"]) => void;
 };
 
 export const useStrokeStore = create<StrokeStore>()((set) => {
   return {
-    activeStrokeType: "simple",
+    activeType: "simple",
     strokes: [],
 
-    addStroke(stroke) {
+    add(stroke) {
       set((state) => {
         const newStrokes = [...state.strokes, stroke];
         return { strokes: newStrokes };
       });
     },
 
-    deleteStrokeById(id) {
+    deleteById(id) {
       set((state) => {
         const filtered = state.strokes.filter((stroke) => stroke.id !== id);
         return { strokes: filtered };
       });
     },
 
-    deleteAllStrokes() {
+    reset() {
       set(() => ({ strokes: [] }));
     },
 
-    setActiveStrokeType(type) {
-      set(() => ({ activeStrokeType: type }));
+    setActiveType(type) {
+      set(() => ({ activeType: type }));
     },
   };
 });

@@ -6,6 +6,7 @@
       "@commons/*": ["./src/commons/*"],
       "@freehand-draw/*": ["./src/freehand-draw/*"],
       "@color-picker/*": ["./src/color-picker/*"],
+      "@stickers/*": ["./src/stickers/*"]
     }
   }
 }

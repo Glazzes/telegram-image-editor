@@ -22,7 +22,12 @@
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
-    }
+      "favicon": "./assets/favicon.png",
+      "orientation": "portrait-primary",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router"
+    ]
   }
 }
