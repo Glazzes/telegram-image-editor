@@ -69,3 +69,4 @@ npx expo start --clear
 <img style="float: left; margin-right: 10px" width="200px" src="./docs/images/color-picker-eyedropper.png" alt="Eyedropper">
 <img style="float: left; margin-right: 10px" width="200px" src="./docs/images/sticker-bottom-sheet.png" alt="Sticker bottom sheet">
 <img style="float: left; margin-right: 10px" width="200px" src="./docs/images/sticker-canvas.png" alt="Sticker on canvas">
+<img style="float: left; margin-right: 10px" width="200px" src="./docs/images/sticker-context-menu.png" alt="Sticker context menu">
