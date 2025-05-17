@@ -21,6 +21,7 @@ import { useCustomDimensions } from "@commons/hooks/useCustomsDimensions";
 import { Vector } from "@commons/types";
 
 import { StickerContextMenuRefType } from "../../utils/types";
+import { theme } from "@commons/theme";
 
 type StickerContextMenuItemProps = {
   title: string;
@@ -123,10 +124,10 @@ StickerContextMenu.Item = StickerContextMenuItem;
 const styles = StyleSheet.create({
   menu: {
     flexDirection: "row",
-    gap: 16,
-    padding: 16,
-    borderRadius: 8,
-    backgroundColor: "#1e1e1e",
+    gap: theme.spacing.m,
+    padding: theme.spacing.m,
+    borderRadius: theme.spacing.s,
+    backgroundColor: theme.colors.secondary,
   },
 });
 
