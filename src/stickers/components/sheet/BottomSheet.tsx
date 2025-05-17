@@ -16,12 +16,12 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Constants from "expo-constants";
 
 import { snapPoint } from "@commons/utils/physics";
+import { theme } from "@commons/theme";
+import { useCustomDimensions } from "@commons/hooks/useCustomsDimensions";
 
 import StickerPreview from "./StickerPreview";
 import { BottomSheetRefType } from "./types";
 import { images } from "../../utils/constants";
-import { useCustomDimensions } from "@commons/hooks/useCustomsDimensions";
-import { theme } from "@commons/theme";
 
 const COLUMS = 4;
 const statusBarHeight = Constants.statusBarHeight
@@ -46,6 +46,10 @@ const BottomSheet = (
 
   const notchOpacity = useSharedValue<number>(1);
 
+  // Value used to prevent pressable from triggering from a pan gesture, for mobile can
+  // be safely removed
+  const isPanning = useSharedValue<boolean>(false);
+
   const open = () => {
     "worklet";
     rootTranslate.value = withSpring(0);
@@ -58,9 +62,12 @@ const BottomSheet = (
     });
   };
 
-  const renderItem = useCallback((info: ListRenderItemInfo<number>) => {
-    return <StickerPreview source={info.item} />;
-  }, []);
+  const renderItem = useCallback(
+    (info: ListRenderItemInfo<number>) => {
+      return <StickerPreview source={info.item} isPanning={isPanning} />;
+    },
+    [isPanning],
+  );
 
   const onContentSizeChange = (_: number, ch: number) => {
     contentHeight.value = ch;
@@ -79,6 +86,8 @@ const BottomSheet = (
     .onStart(() => {
       cancelAnimation(translate);
       offset.value = translate.value;
+
+      isPanning.value = true;
     })
     .onUpdate((e) => {
       translate.value = offset.value + e.translationY;
