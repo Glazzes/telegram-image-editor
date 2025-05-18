@@ -45,6 +45,23 @@ To execute this project as a web application run:
 npx expo start --web --clear
 ```
 
+### Docker
+First you'll need to build the project:
+```sh
+yarn install
+npx expo export --platform web
+```
+
+The build the docker image:
+```sh
+docker build -t telegram-image-editor:0.0.1 .
+```
+
+Finally run the container:
+```sh
+docker run -d --name editor -p your-port-number-here:3000 telegram-image-editor:0.0.1
+```
+
 ### Android and iOS
 This project is built with supported libraries by the Expo SDK only, so you can run this on your device no problem within the Expo GO app.
 
@@ -52,9 +69,6 @@ To execute this project as a mobile application run:
 ```sh
 npx expo start --clear
 ```
-
-## License
-[Creative Commons BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
 ## Screenshots
 [<img style="float: left; margin-right: 10px" width="200px" src="./docs/images/penciil-basic.png" alt="Basic pencil">]("")
@@ -70,3 +84,6 @@ npx expo start --clear
 <img style="float: left; margin-right: 10px" width="200px" src="./docs/images/sticker-bottom-sheet.png" alt="Sticker bottom sheet">
 <img style="float: left; margin-right: 10px" width="200px" src="./docs/images/sticker-canvas.png" alt="Sticker on canvas">
 <img style="float: left; margin-right: 10px" width="200px" src="./docs/images/sticker-context-menu.png" alt="Sticker context menu">
+
+## License
+[Creative Commons BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
