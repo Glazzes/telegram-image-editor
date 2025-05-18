@@ -32,7 +32,7 @@ I've always dreamed of replicating it's functionaties and unveiling its secrets,
     - save to device gallery (Android and iOS only)
 
 ## Demo
-Pending
+http://140.238.187.124:3000/
 
 ## How to run
 Before running this project, follow [Watchman's installation guide](https://facebook.github.io/watchman/docs/install#buildinstall).
