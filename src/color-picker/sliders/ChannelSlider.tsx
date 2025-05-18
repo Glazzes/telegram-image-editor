@@ -239,13 +239,7 @@ const ChannelSlider: React.FC<ChannelSliderProps> = ({
           <View style={styles.sliderContainer}>
             <View style={styles.canvasContainer}>
               <Canvas style={styles.canvas}>
-                <Rect
-                  x={0}
-                  y={0}
-                  width={width}
-                  height={height}
-                  color={"orange"}
-                >
+                <Rect x={0} y={0} width={width} height={height}>
                   <LinearGradient
                     colors={gradient}
                     start={vec(0, 0)}

@@ -30,7 +30,10 @@ import { useCustomDimensions } from "@commons/hooks/useCustomsDimensions";
 import { Size } from "@commons/types";
 
 import { EYE_DROPPER_SHADER } from "./utils";
-import { emitSelectedColorEvent } from "../utils/emitter";
+import {
+  emitSelectedColorEvent,
+  emitUpdateColorPickerColor,
+} from "../utils/emitter";
 
 type EyeDropperProps = {
   image: SkImage;
@@ -102,6 +105,7 @@ const EyeDropper: React.FC<EyeDropperProps> = (props) => {
     const g = clamp(Math.round(pixels[1]! * 255), 0, 255);
     const b = clamp(Math.round(pixels[2]! * 255), 0, 255);
     emitSelectedColorEvent(`rgba(${r}, ${g}, ${b}, 1)`);
+    emitUpdateColorPickerColor(`rgba(${r}, ${g}, ${b}, 1)`);
 
     translate.x.value = 0;
     translate.y.value = 0;

@@ -53,7 +53,7 @@ const StrokeListItem: React.FC<StrokeListItemProps> = React.memo(
 
     return null;
   },
-  () => true,
+  (prev, next) => prev.stroke.id === next.stroke.id,
 );
 
 StrokeListItem.displayName = "StrokeListItem";

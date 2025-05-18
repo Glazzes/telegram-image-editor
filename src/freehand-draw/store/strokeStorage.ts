@@ -17,7 +17,7 @@ export function setStrokeColorByType(strokeType: string, color: string) {
   storage.set(key, color);
 }
 
-export function getStrokecolorByType(strokeType: string): string | undefined {
+export function getStrokeColorByType(strokeType: string): string | undefined {
   const key = `${strokeType}-color`;
   return storage.getString(key);
 }

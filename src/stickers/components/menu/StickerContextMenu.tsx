@@ -21,6 +21,7 @@ import { useCustomDimensions } from "@commons/hooks/useCustomsDimensions";
 import { Vector } from "@commons/types";
 
 import { StickerContextMenuRefType } from "../../utils/types";
+import { theme } from "@commons/theme";
 
 type StickerContextMenuItemProps = {
   title: string;
@@ -61,15 +62,15 @@ const StickerContextMenu = forwardRef<
   const menuSize = useSize(0, 0);
   const position = useVector(initialPosition);
 
-  const onLayout = (e: LayoutChangeEvent) => {
+  function onLayout(e: LayoutChangeEvent) {
     if (menuSize.width.value === 0 || menuSize.height.value === 0) {
       menuSize.width.value = e.nativeEvent.layout.width;
       menuSize.height.value = e.nativeEvent.layout.height;
       setIsOpen(false);
     }
-  };
+  }
 
-  const enter = (center: Vector<number>) => {
+  function enter(center: Vector<number>) {
     const lower = 0;
     const boundX = screenWidth - menuSize.width.value;
     const boundY = screenHeight - menuSize.height.value;
@@ -85,12 +86,12 @@ const StickerContextMenu = forwardRef<
 
       runOnJS(setIsOpen)(true);
     })();
-  };
+  }
 
-  const exit = (callback?: () => void) => {
+  function exit(callback?: () => void) {
     callback?.();
     setIsOpen(false);
-  };
+  }
 
   const animatedStyles = useAnimatedStyle(
     () => ({
@@ -123,10 +124,10 @@ StickerContextMenu.Item = StickerContextMenuItem;
 const styles = StyleSheet.create({
   menu: {
     flexDirection: "row",
-    gap: 16,
-    padding: 16,
-    borderRadius: 8,
-    backgroundColor: "#1e1e1e",
+    gap: theme.spacing.m,
+    padding: theme.spacing.m,
+    borderRadius: theme.spacing.s,
+    backgroundColor: theme.colors.secondary,
   },
 });
 

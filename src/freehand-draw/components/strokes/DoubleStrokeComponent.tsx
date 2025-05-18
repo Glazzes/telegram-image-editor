@@ -17,7 +17,7 @@ const DoubleStrokeComponent: React.FC<DoubleStrokeComponentProps> = ({
         strokeWidth={stroke.strokeWidth * 2}
         strokeJoin={"round"}
         strokeCap={"round"}
-        style={"stroke"}
+        style={stroke.isTap ? "fill" : "stroke"}
       />
       <Path
         path={stroke.path}
@@ -25,7 +25,7 @@ const DoubleStrokeComponent: React.FC<DoubleStrokeComponentProps> = ({
         strokeWidth={stroke.strokeWidth}
         strokeJoin={"round"}
         strokeCap={"round"}
-        style={"stroke"}
+        style={stroke.isTap ? "fill" : "stroke"}
       />
     </React.Fragment>
   );

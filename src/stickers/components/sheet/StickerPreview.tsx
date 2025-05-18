@@ -8,9 +8,11 @@ import { theme } from "@commons/theme";
 import { useStickerStore } from "@stickers/store/stickerStore";
 import { emitCloseStickerBottomSheet } from "@stickers/utils/emitter";
 import { useRecordStore } from "@commons/store/useRecordStore";
+import { SharedValue } from "react-native-reanimated";
 
 type StickerPreviewProps = {
   source: number;
+  isPanning: SharedValue<boolean>;
 };
 
 const StickerPreview = (props: StickerPreviewProps) => {
@@ -23,6 +25,11 @@ const StickerPreview = (props: StickerPreviewProps) => {
   const imageSize = size - (theme.spacing.m * 4) / 4;
 
   function onPress() {
+    if (props.isPanning.value) {
+      props.isPanning.value = false;
+      return;
+    }
+
     const newId = randomUUID();
     addSticker({ id: newId, source: props.source });
     addRecord({ id: newId, type: "sticker" });

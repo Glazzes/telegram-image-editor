@@ -53,8 +53,8 @@ const TestComponent = () => {
           <ShapeMenuProvider>
             <View
               style={{
-                width: width,
-                height: height,
+                width,
+                height,
                 backgroundColor: "#000",
               }}
             >

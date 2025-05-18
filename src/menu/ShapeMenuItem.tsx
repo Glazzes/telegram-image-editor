@@ -3,7 +3,7 @@ import { Text, StyleSheet, Pressable } from "react-native";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 
 import {
-  getStrokecolorByType,
+  getStrokeColorByType,
   getStrokeWidthByType,
   setStrokeColorByType,
   setStrokeWidthByType,
@@ -30,9 +30,7 @@ const ShapeMenuItem: React.FC<ShapeMenuItemProps> = ({
   const { dissmisMenu } = useShapeMenu();
 
   const addShapeType = useShapeStore((state) => state.addShapeType);
-  const setActiveStrokeType = useStrokeStore(
-    (state) => state.setActiveType,
-  );
+  const setActiveStrokeType = useStrokeStore((state) => state.setActiveType);
 
   function setNewShape() {
     addShapeType(shapeType);
@@ -41,7 +39,7 @@ const ShapeMenuItem: React.FC<ShapeMenuItemProps> = ({
   }
 
   useEffect(() => {
-    const savedColor = getStrokecolorByType(strokeType);
+    const savedColor = getStrokeColorByType(strokeType);
     const savedWidth = getStrokeWidthByType(strokeType);
 
     if (savedColor === undefined) setStrokeColorByType(strokeType, "red");

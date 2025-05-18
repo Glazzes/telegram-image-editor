@@ -19,11 +19,13 @@ const EraserStrokeComponent: React.FC<EraserStrokeComponentProps> = ({
   stroke,
   canvasSize,
 }) => {
-  stroke.path.stroke({
-    width: stroke.strokeWidth,
-    cap: StrokeCap.Round,
-    join: StrokeJoin.Round,
-  });
+  if (!stroke.isTap) {
+    stroke.path.stroke({
+      width: stroke.strokeWidth,
+      cap: StrokeCap.Round,
+      join: StrokeJoin.Round,
+    });
+  }
 
   return (
     <Group clip={stroke.path}>

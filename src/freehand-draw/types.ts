@@ -4,6 +4,7 @@ type CommonStrokeProperties = {
   id: string;
   path: SkPath;
   strokeWidth: number;
+  isTap: boolean;
 };
 
 export type SimpleStroke = {
@@ -39,19 +40,19 @@ export type EraserStroke = {
 export type CircleShape = {
   type: "circle-shape";
   color: string;
-} & CommonStrokeProperties;
+} & Omit<CommonStrokeProperties, "isTap">;
 
 export type StarShape = {
   type: "star-shape";
   color: string;
   cornerPath: number;
-} & CommonStrokeProperties;
+} & Omit<CommonStrokeProperties, "isTap">;
 
 export type ArrowShape = {
   type: "arrow-shape";
   color: string;
   headPath: SkPath;
-} & CommonStrokeProperties;
+} & Omit<CommonStrokeProperties, "isTap">;
 
 export type Stroke =
   | SimpleStroke

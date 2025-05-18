@@ -1,5 +1,5 @@
-import React from "react";
-import { View, ViewStyle } from "react-native";
+import React, { useEffect } from "react";
+import { StyleSheet, View, ViewStyle } from "react-native";
 import Animated, {
   clamp,
   useAnimatedReaction,
@@ -17,6 +17,7 @@ import { useColorPickerDimensions } from "@color-picker/hooks/useColorPickerDime
 
 import { getColorFromGrid, getLuminance, GRID_SHADER } from "./utils";
 import type { RGB } from "../utils/types";
+import { listenToSelectedColorEvent } from "@color-picker/utils/emitter";
 
 type GridProps = {
   activeSelector: SharedValue<0 | 1 | 2>;
@@ -120,7 +121,15 @@ const Grid: React.FC<GridProps> = ({ color, activeSelector }) => {
     [activeSelector],
   );
 
-  const styles: Record<string, ViewStyle> = {
+  useEffect(() => {
+    const onColorSelected = listenToSelectedColorEvent(() => {
+      opacity.value = 0;
+    });
+
+    return () => onColorSelected.remove();
+  }, [opacity]);
+
+  const styles = StyleSheet.create({
     root: {
       width: width + theme.spacing.m * 2,
       height: height,
@@ -140,7 +149,7 @@ const Grid: React.FC<GridProps> = ({ color, activeSelector }) => {
       borderWidth: 4,
       position: "absolute",
     },
-  };
+  });
 
   return (
     <View style={styles.root}>

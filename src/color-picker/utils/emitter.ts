@@ -52,3 +52,14 @@ export function listentoColorSelectorSnapshotEvent(
 ): EventSubscription {
   return emitter.addListener(COLOR_SELECTOR_SNAPSHOT_EVENT, cb);
 }
+
+const UPDATE_COLOR_PICKER_COLOR = "update-color-picker-color";
+export function emitUpdateColorPickerColor(color: string) {
+  emitter.emit(UPDATE_COLOR_PICKER_COLOR, color);
+}
+
+export function listenToUpdateColorPickerColor(
+  cb: (color: string) => void,
+): EventSubscription {
+  return emitter.addListener(UPDATE_COLOR_PICKER_COLOR, cb);
+}

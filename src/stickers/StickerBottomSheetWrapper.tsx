@@ -35,7 +35,7 @@ const StickerBottomSheetWrapper = (props: StickerWrapperProps) => {
   }, []);
 
   return (
-    <View style={{ width, height }}>
+    <View style={{ width, height, overflow: "hidden" }}>
       {props.children}
 
       <BottomSheet ref={sheetRef} />

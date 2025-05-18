@@ -7,9 +7,11 @@ const iphoneSEViewport: Size<number> = {
 };
 
 export const useCustomDimensions = (): Size<number> => {
-  const dimensions = useWindowDimensions();
+  let dimensions = useWindowDimensions();
+  dimensions.width = Math.max(1366);
+  dimensions.height = Math.max(654);
 
-  if (Platform.OS === "web") {
+  if (Platform.OS === "web" && dimensions.width > 420) {
     const aspectRatio = iphoneSEViewport.width / iphoneSEViewport.height;
 
     return {
