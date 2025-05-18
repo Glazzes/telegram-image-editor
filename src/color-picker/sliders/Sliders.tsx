@@ -115,7 +115,7 @@ const Sliders: React.FC<SlidersProps> = ({ color, activeSelector }) => {
       />
 
       <View style={styles.hexContainer}>
-        <Text style={styles.title}>COLOR HEXADECIMAL #</Text>
+        <Text style={styles.title}>HEX COLOR #</Text>
         <AnimatedText
           text={hexColor}
           style={[styles.input]}

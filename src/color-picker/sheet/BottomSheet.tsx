@@ -6,7 +6,11 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import {
+  Gesture,
+  GestureDetector,
+  Pressable,
+} from "react-native-gesture-handler";
 
 import { theme } from "@commons/theme";
 import { useCustomDimensions } from "@commons/hooks/useCustomsDimensions";
@@ -18,9 +22,13 @@ import OpacitySlider from "./slider/OpacitySlider";
 import Controls from "./Controls";
 
 import type { RGB } from "../utils/types";
-import { hsl2rgb } from "../utils/colors";
-import { listenToOpenSheetEvent } from "../utils/emitter";
+import { hsl2rgb, parseRGBA, rgb2hsl } from "../utils/colors";
+import {
+  listenToOpenSheetEvent,
+  listenToUpdateColorPickerColor,
+} from "../utils/emitter";
 import { snapPoint } from "../utils/snapPoint";
+import { getStrokeColorByType } from "@freehand-draw/store/strokeStorage";
 
 const BottomSheet = () => {
   const { width, height } = useCustomDimensions();
@@ -29,10 +37,19 @@ const BottomSheet = () => {
   const offsetY = useSharedValue<number>(0);
   const keyboardHeight = useSharedValue<number>(0);
 
-  const color = useSharedValue<RGB>(hsl2rgb(180, 1, 0.5));
+  const color = useSharedValue<RGB>([0, 255, 255]);
   const opacity = useSharedValue<number>(1);
   const activeSelector = useSharedValue<0 | 1 | 2>(0);
   const slidertranslateX = useSharedValue<number>(0);
+
+  function close() {
+    "worklet";
+
+    translateY.value = withTiming(0, undefined, () => {
+      activeSelector.value = 0;
+      slidertranslateX.value = 0;
+    });
+  }
 
   const pan = Gesture.Pan()
     .onStart(() => {
@@ -44,10 +61,10 @@ const BottomSheet = () => {
     .onEnd((e) => {
       const to = snapPoint(translateY.value, e.velocityY, [-1 * height, 0]);
       translateY.value = withTiming(to, undefined, () => {
-        if (to === translateY.value) return;
+        if (to !== 0) return;
 
-        slidertranslateX.value = 0;
         activeSelector.value = 0;
+        slidertranslateX.value = 0;
       });
     });
 
@@ -84,6 +101,14 @@ const BottomSheet = () => {
   }, [keyboardHeight]);
 
   useEffect(() => {
+    const strokeColor = getStrokeColorByType("simple");
+    if (strokeColor !== undefined) {
+      const channels = parseRGBA(strokeColor);
+      color.value = [channels.r, channels.g, channels.b];
+    }
+  }, [color]);
+
+  useEffect(() => {
     const openSub = listenToOpenSheetEvent(() => {
       translateY.value = withTiming(-1 * height);
     });
@@ -91,8 +116,23 @@ const BottomSheet = () => {
     return () => openSub.remove();
   }, [height, translateY]);
 
+  useEffect(() => {
+    const updateColorSub = listenToUpdateColorPickerColor((rgba) => {
+      const channels = parseRGBA(rgba);
+
+      color.value = [channels.r, channels.g, channels.b];
+    });
+
+    return () => updateColorSub.remove();
+  }, [color, opacity]);
+
   return (
     <Animated.View style={[{ width, height }, styles.root, bottomSheetStyles]}>
+      <Pressable
+        style={{ width, height, position: "absolute", cursor: "auto" }}
+        onPress={close}
+      />
+
       <View style={styles.sheet}>
         <GestureDetector gesture={pan}>
           <Animated.View style={styles.dragable}>

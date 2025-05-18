@@ -16,6 +16,7 @@ import Animated, {
   useAnimatedRef,
   runOnUI,
   measure,
+  useDerivedValue,
 } from "react-native-reanimated";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 
@@ -63,6 +64,14 @@ const Controls: React.FC<ControlsProps> = ({
   const gridText = useSharedValue<TextLayoutInfo>({ width: 0, x: 0 });
   const gammaText = useSharedValue<TextLayoutInfo>({ width: 0, x: 0 });
   const sliderText = useSharedValue<TextLayoutInfo>({ width: 0, x: 0 });
+
+  // Used to reset to the bottom sheet colors and slider position
+  useDerivedValue(() => {
+    if (activeSelector.value === 0) {
+      textWidth.value = withTiming(gridText.value.width);
+      indicatorTranslateX.value = withTiming(0);
+    }
+  }, [activeSelector, gridText]);
 
   function mesaureText(e: LayoutChangeEvent, index: number) {
     const { width, x } = e.nativeEvent.layout;
@@ -120,7 +129,7 @@ const Controls: React.FC<ControlsProps> = ({
 
   function selectColor() {
     const [r, g, b] = color.value;
-    const newColor = `rgba(${r}, ${g}, ${b}, ${opacity.value})`;
+    const newColor = `rgba(${Math.floor(r)}, ${Math.floor(g)}, ${Math.floor(b)}, ${opacity.value})`;
 
     Keyboard.dismiss();
     emitSelectedColorEvent(newColor);
@@ -132,7 +141,7 @@ const Controls: React.FC<ControlsProps> = ({
     });
   }
 
-  const inidicatorStyles = useAnimatedStyle(() => {
+  const indicatorStyles = useAnimatedStyle(() => {
     return {
       width: textWidth.value,
       transform: [
@@ -156,7 +165,7 @@ const Controls: React.FC<ControlsProps> = ({
         style={{ justifyContent: "flex-end" }}
       >
         <Text style={styles.text}>grid</Text>
-        <Animated.View style={[styles.indicator, inidicatorStyles]} />
+        <Animated.View style={[styles.indicator, indicatorStyles]} />
       </AnimatedPressable>
 
       <AnimatedPressable

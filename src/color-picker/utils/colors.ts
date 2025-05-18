@@ -2,7 +2,7 @@ import { clamp } from "react-native-reanimated";
 
 import type { HSL, RGB } from "./types";
 
-export const hsl2rgb = (h: number, s: number, l: number): RGB => {
+export function hsl2rgb(h: number, s: number, l: number): RGB {
   "worklet";
   const c = (1 - Math.abs(2 * l - 1)) * s;
   const huePrime = h / 60;
@@ -53,9 +53,9 @@ export const hsl2rgb = (h: number, s: number, l: number): RGB => {
     clamp((g + m) * 255, 0, 255),
     clamp((b + m) * 255, 0, 255),
   ];
-};
+}
 
-export const rgb2hsl = (color: RGB): HSL => {
+export function rgb2hsl(color: RGB): HSL {
   "worklet";
   let [r, g, b] = color;
 
@@ -82,9 +82,26 @@ export const rgb2hsl = (color: RGB): HSL => {
   const lightness = (2 * l - s) / 2;
 
   return { h: hue, s: saturation, l: lightness };
-};
+}
 
-export const stringifyRGB = (color: RGB): string => {
+export function stringifyRGB(color: RGB) {
   "worklet";
   return `rgba(${color[0]}, ${color[1]}, ${color[2]}, 1)`;
-};
+}
+
+export function parseRGBA(rgba: string) {
+  const regex =
+    /^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(?:,\s*(\d*\.?\d+)\s*)?\)$/;
+  const match = rgba.match(regex);
+
+  if (!match) {
+    throw new Error("Formato RGBA inválido");
+  }
+
+  return {
+    r: parseInt(match[1], 10),
+    g: parseInt(match[2], 10),
+    b: parseInt(match[3], 10),
+    a: match[4] !== undefined ? parseFloat(match[4]) : 1,
+  };
+}

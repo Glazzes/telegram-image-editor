@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import Animated, {
   clamp,
+  Extrapolation,
   interpolate,
   useDerivedValue,
   useSharedValue,
@@ -15,6 +16,9 @@ import { useColorPickerDimensions } from "@color-picker/hooks/useColorPickerDime
 
 import type { RGB } from "../../utils/types";
 import OpacitySliderIndicator from "./OpacitySliderIndicator";
+import { listenToUpdateColorPickerColor } from "@color-picker/utils/emitter";
+import { parseRGBA } from "@color-picker/utils/colors";
+import { getStrokeColorByType } from "@freehand-draw/store/strokeStorage";
 
 type OpacitySliderProps = {
   color: SharedValue<RGB>;
@@ -42,6 +46,18 @@ const OpacitySlider: React.FC<OpacitySliderProps> = ({ color, opacity }) => {
     return [start, end];
   }, [color]);
 
+  function setValuesByColor(color: string) {
+    const channels = parseRGBA(color);
+
+    opacity.value = channels.a;
+    translateX.value = interpolate(
+      channels.a,
+      [0, 1],
+      [-1 * boundary, boundary],
+      Extrapolation.CLAMP,
+    );
+  }
+
   const pan = Gesture.Pan()
     .onStart((e) => {
       offset.value = e.x - width / 2;
@@ -55,6 +71,20 @@ const OpacitySlider: React.FC<OpacitySliderProps> = ({ color, opacity }) => {
         [0, 1],
       );
     });
+
+  useEffect(() => {
+    const strokeColor = getStrokeColorByType("simple");
+    if (strokeColor !== undefined) {
+      setValuesByColor(strokeColor);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const updateColorSub = listenToUpdateColorPickerColor(setValuesByColor);
+    return () => updateColorSub.remove();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [opacity, translateX, boundary]);
 
   const styles = StyleSheet.create({
     canvasContainer: {

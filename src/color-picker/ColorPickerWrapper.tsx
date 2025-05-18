@@ -37,7 +37,7 @@ const ColorPickerWrapper = (props: ColorPickerProps) => {
   }, []);
 
   return (
-    <View style={{ width, height }}>
+    <View style={{ width, height, overflow: "hidden" }}>
       <RootCopy ref={ref} />
 
       {props.children}
