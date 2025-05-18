@@ -120,10 +120,13 @@ const ColorSelector: React.FC<ActiveColorProps> = ({
   }, [strokeStore.color, strokeStore.width, activeStrokeType]);
 
   useEffect(() => {
-    const currentColor = getStrokeColorByType(activeStrokeType)!;
-    strokeStore.color.value = currentColor;
+    const currentColor = getStrokeColorByType(activeStrokeType);
+    if (currentColor !== undefined) {
+      strokeStore.color.value = currentColor;
 
-    emitUpdateColorPickerColor(currentColor);
+      console.log(currentColor);
+      emitUpdateColorPickerColor(currentColor);
+    }
   }, [activeStrokeType, strokeStore.color]);
 
   const styles = StyleSheet.create({

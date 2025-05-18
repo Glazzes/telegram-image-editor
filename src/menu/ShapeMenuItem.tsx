@@ -42,7 +42,8 @@ const ShapeMenuItem: React.FC<ShapeMenuItemProps> = ({
     const savedColor = getStrokeColorByType(strokeType);
     const savedWidth = getStrokeWidthByType(strokeType);
 
-    if (savedColor === undefined) setStrokeColorByType(strokeType, "red");
+    const baseColor = "rgba(0, 255, 255, 1)";
+    if (savedColor === undefined) setStrokeColorByType(strokeType, baseColor);
     if (savedWidth === undefined) setStrokeWidthByType(strokeType, 0.5);
   }, [strokeType]);
 

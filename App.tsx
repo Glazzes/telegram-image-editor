@@ -13,7 +13,7 @@ export default function App() {
             `https://cdn.jsdelivr.net/npm/canvaskit-wasm@${version}/bin/full/${file}`,
         }}
         getComponent={() => require("./TestComponent")}
-        fallback={<Text>Loading...</Text>}
+        fallback={<Text style={styles.title}>Loading editor files...</Text>}
       />
       <StatusBar style="auto" />
     </View>
@@ -26,5 +26,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
   },
 });
