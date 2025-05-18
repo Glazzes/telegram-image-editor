@@ -2,7 +2,7 @@ import { makeMutable, SharedValue } from "react-native-reanimated";
 import { create } from "zustand";
 
 import { BASE_STROKE_WIDTH } from "../constants";
-import { getStrokecolorByType, getStrokeWidthByType } from "./strokeStorage";
+import { getStrokeColorByType, getStrokeWidthByType } from "./strokeStorage";
 
 type SliderStore = {
   color: SharedValue<string>;
@@ -14,7 +14,7 @@ type SliderStore = {
 // Inmutable hook which holds data for the store width slider.
 // This thing will not cause any re renders.
 export const useStrokeWidthStore = create<SliderStore>()(() => {
-  const initialColor = getStrokecolorByType("simple") ?? "red";
+  const initialColor = getStrokeColorByType("simple") ?? "rgba(0, 255, 255, 1)";
   const initialWidth = getStrokeWidthByType("simple") ?? 0.5;
 
   const color = makeMutable<string>(initialColor);

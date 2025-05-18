@@ -14,14 +14,16 @@ import {
 import {
   emitColorSelectorSnapshotEvent,
   emitOpenSheetEvent,
+  emitUpdateColorPickerColor,
   listenToSelectedColorEvent,
 } from "@color-picker/utils/emitter";
 import { useStrokeWidthStore } from "@freehand-draw/store/useStrokeWidthStore";
 import { useStrokeStore } from "@freehand-draw/store/useStrokeStore";
 import {
-  getStrokecolorByType,
+  getStrokeColorByType,
   setStrokeColorByType,
 } from "@freehand-draw/store/strokeStorage";
+import { useShallow } from "zustand/react/shallow";
 
 type ActiveColorProps = {
   size: number;
@@ -65,12 +67,16 @@ const ColorSelector: React.FC<ActiveColorProps> = ({
   size,
   availableSpace,
 }) => {
-  const canvasRef = useCanvasRef();
-
-  const { color, strokeWidth } = useStrokeWidthStore();
-  const activeStrokeType = useStrokeStore((state) => state.activeType);
-
   const width = (size * 0.15) / 2;
+
+  const canvasRef = useCanvasRef();
+  const activeStrokeType = useStrokeStore((state) => state.activeType);
+  const strokeStore = useStrokeWidthStore(
+    useShallow((state) => ({
+      color: state.color,
+      width: state.strokeWidth,
+    })),
+  );
 
   const clipPath = Skia.Path.Make();
   clipPath.addCircle(size / 2, size / 2, size / 2 - width / 2);
@@ -95,27 +101,30 @@ const ColorSelector: React.FC<ActiveColorProps> = ({
   }
 
   useAnimatedReaction(
-    () => color.value,
-    () => {
-      runOnJS(takeSnapshot)();
+    () => strokeStore.color.value,
+    (_, prev) => {
+      if (prev !== null) {
+        runOnJS(takeSnapshot)();
+      }
     },
-    [color],
+    [strokeStore.color],
   );
 
   useEffect(() => {
     const sub = listenToSelectedColorEvent((newColor) => {
-      color.value = newColor;
-
+      strokeStore.color.value = newColor;
       setStrokeColorByType(activeStrokeType, newColor);
     });
 
     return () => sub.remove();
-  }, [color, strokeWidth, activeStrokeType]);
+  }, [strokeStore.color, strokeStore.width, activeStrokeType]);
 
   useEffect(() => {
-    const currentColor = getStrokecolorByType(activeStrokeType)!;
-    color.value = currentColor;
-  }, [activeStrokeType, color]);
+    const currentColor = getStrokeColorByType(activeStrokeType)!;
+    strokeStore.color.value = currentColor;
+
+    emitUpdateColorPickerColor(currentColor);
+  }, [activeStrokeType, strokeStore.color]);
 
   const styles = StyleSheet.create({
     container: {
@@ -138,7 +147,7 @@ const ColorSelector: React.FC<ActiveColorProps> = ({
           cx={size / 2}
           cy={size / 2}
           r={size / 2 - width * 2}
-          color={color}
+          color={strokeStore.color}
         />
       </Canvas>
     </Pressable>

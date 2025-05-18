@@ -8,7 +8,10 @@ const _layout = () => {
     <GestureHandlerRootView style={styles.root}>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" />
-        <Stack.Screen name="page" />
+        <Stack.Screen
+          name="modal"
+          options={{ presentation: "transparentModal" }}
+        />
       </Stack>
     </GestureHandlerRootView>
   );

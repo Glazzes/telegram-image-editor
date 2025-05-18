@@ -175,8 +175,12 @@ const DrawingLayer: React.FC<DrawingLayerProps> = ({
     });
 
   const tap = Gesture.Tap().onEnd((e) => {
-    path.value.addCircle(e.x, e.y, strokeWidth.value / 2);
+    if (stickerStore.activeId.value !== undefined) {
+      stickerStore.activeId.value = undefined;
+      return;
+    }
 
+    path.value.addCircle(e.x, e.y, strokeWidth.value / 2);
     runOnJS(onStrokeEnd)(true);
   });
 
