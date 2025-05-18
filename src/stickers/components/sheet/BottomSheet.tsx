@@ -1,5 +1,5 @@
 import React, { forwardRef, useCallback, useImperativeHandle } from "react";
-import { ListRenderItemInfo, StyleSheet, View } from "react-native";
+import { ListRenderItemInfo, Pressable, StyleSheet, View } from "react-native";
 import Animated, {
   cancelAnimation,
   clamp,
@@ -142,6 +142,11 @@ const BottomSheet = (
 
   return (
     <Animated.View style={[rootAnimatedStyle, styles.absolute]}>
+      <Pressable
+        style={{ width, height, position: "absolute", cursor: "auto" }}
+        onPress={close}
+      />
+
       <GestureDetector gesture={panGesture}>
         <Animated.View style={[styles.container, detectionAnimatedStyle]}>
           <View style={styles.header}>

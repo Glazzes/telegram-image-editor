@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Platform, StyleSheet, useWindowDimensions } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 import Animated, {
   Easing,
   measure,
@@ -21,7 +21,6 @@ import {
 import { useImage } from "@shopify/react-native-skia";
 
 import { useVector } from "@commons/hooks/useVector";
-import { useCustomDimensions } from "@commons/hooks/useCustomsDimensions";
 import { Size, Vector } from "@commons/types";
 
 import {
@@ -42,13 +41,10 @@ type StickerProps = {
 
 const INDICATOR_SIZE = 20;
 const HITSLOP = (44 - INDICATOR_SIZE) / 2;
-
 const BORDER_RADIUS = INITIAL_STICKER_SIZE / 2;
 
 const Sticker: React.FC<StickerProps> = ({ sticker, canvasSize }) => {
   const animatedRef = useAnimatedRef();
-  const screenDimensions = useWindowDimensions();
-  const customDimensions = useCustomDimensions();
 
   const { activeId, pressedRecord, stickerData } = useStickerStore();
 
@@ -77,9 +73,7 @@ const Sticker: React.FC<StickerProps> = ({ sticker, canvasSize }) => {
   const rotateY = useSharedValue<number>(sticker.transform?.rotateY ?? 0);
 
   function openStickerMenu(position: Vector<number>) {
-    const startX = screenDimensions.width / 2 - customDimensions.width / 2;
-
-    emitOpenStickerContextEvent({ x: position.x - startX, y: position.y });
+    emitOpenStickerContextEvent({ x: position.x, y: position.y });
   }
 
   function displayBorder(

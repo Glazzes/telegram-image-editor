@@ -1,5 +1,11 @@
-import React, { useEffect, useRef } from "react";
-import { View } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { Pressable, StyleSheet } from "react-native";
+import Animated, {
+  measure,
+  runOnJS,
+  runOnUI,
+  useAnimatedRef,
+} from "react-native-reanimated";
 import { randomUUID } from "expo-crypto";
 import { useShallow } from "zustand/react/shallow";
 
@@ -16,7 +22,10 @@ import StickerOptionsMenu from "./components/menu/StickerContextMenu";
 import { StickerContextMenuRefType } from "./utils/types";
 
 const StickerContextMenuWrapper = (props: React.PropsWithChildren) => {
+  const animatedRef = useAnimatedRef();
   const menuRef = useRef<StickerContextMenuRefType>(null);
+
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const recordStore = useRecordStore(
     useShallow((state) => ({
@@ -33,8 +42,25 @@ const StickerContextMenuWrapper = (props: React.PropsWithChildren) => {
     })),
   );
 
+  function openStickerMenuJS(position: Vector<number>) {
+    menuRef.current?.enter(position);
+    setIsOpen(true);
+  }
+
   function openStickerMenu(center: Vector<number>) {
-    menuRef.current?.enter(center);
+    runOnUI(() => {
+      const measument = measure(animatedRef);
+      if (measument === null) return;
+
+      const x = center.x - measument.pageX;
+      const y = center.y - measument.pageY;
+
+      runOnJS(openStickerMenuJS)({ x, y });
+    })();
+  }
+
+  function closeStickerMenu() {
+    menuRef.current?.exit(() => setIsOpen(false));
   }
 
   function flip() {
@@ -43,6 +69,8 @@ const StickerContextMenuWrapper = (props: React.PropsWithChildren) => {
       if (currentId !== undefined) {
         emitFlipStickerEvent(currentId);
       }
+
+      setIsOpen(false);
     });
   }
 
@@ -54,6 +82,8 @@ const StickerContextMenuWrapper = (props: React.PropsWithChildren) => {
       const newId = randomUUID();
       recordStore.add({ id: newId, type: "sticker" });
       stickerStore.cloneById(currentStickerId, newId);
+
+      setIsOpen(false);
     });
   }
 
@@ -62,6 +92,7 @@ const StickerContextMenuWrapper = (props: React.PropsWithChildren) => {
       const currentStickerId = stickerStore.activeId.value;
       if (currentStickerId === undefined) return;
 
+      setIsOpen(false);
       recordStore.deleteById(currentStickerId);
       stickerStore.deleteById(currentStickerId);
     });
@@ -71,19 +102,36 @@ const StickerContextMenuWrapper = (props: React.PropsWithChildren) => {
     const openContextMenuSub = listenToOpenStickerContextEvent(openStickerMenu);
 
     return () => openContextMenuSub.remove();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <View style={{ flex: 1 }}>
+    <Animated.View ref={animatedRef} style={styles.root}>
       {props.children}
+
+      {isOpen ? (
+        <Pressable style={styles.intersection} onPress={closeStickerMenu} />
+      ) : null}
 
       <StickerOptionsMenu ref={menuRef}>
         <StickerOptionsMenu.Item title="flip" onPress={flip} />
         <StickerOptionsMenu.Item title="duplicate" onPress={duplicate} />
         <StickerOptionsMenu.Item title="delete" onPress={deleteSticker} />
       </StickerOptionsMenu>
-    </View>
+    </Animated.View>
   );
 };
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
+  intersection: {
+    width: "100%",
+    height: "100%",
+    position: "absolute",
+    cursor: "auto",
+  },
+});
 
 export default StickerContextMenuWrapper;
