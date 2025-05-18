@@ -1,4 +1,4 @@
-import React, { forwardRef, useImperativeHandle } from "react";
+import React, { forwardRef, useEffect, useImperativeHandle } from "react";
 import { StyleSheet, View, type ViewStyle } from "react-native";
 
 import Animated, {
@@ -14,7 +14,9 @@ import Animated, {
 } from "react-native-reanimated";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { Canvas, Path, Skia, rect } from "@shopify/react-native-skia";
+
 import { StrokeWidthSliderRef } from "@freehand-draw/types";
+import { getStrokeWidthByType } from "@freehand-draw/store/strokeStorage";
 
 type StrokeWidthSliderProps = {
   upperRadius: number;
@@ -63,7 +65,20 @@ const StrokeWidthSlider = forwardRef<
   const translate = useSharedValue<number>(0);
   const offset = useSharedValue<number>(0);
 
-  const getOutputValue = (translateY: number): number => {
+  function translateToValue(progress: number) {
+    "worklet";
+
+    const toPositionY = interpolate(
+      progress,
+      [0, 1],
+      [lowerBound, upperBound],
+      Extrapolation.CLAMP,
+    );
+
+    translate.value = withTiming(toPositionY);
+  }
+
+  function getOutputValue(translateY: number) {
     "worklet";
     return interpolate(
       translateY,
@@ -71,7 +86,7 @@ const StrokeWidthSlider = forwardRef<
       [1, 0],
       Extrapolation.CLAMP,
     );
-  };
+  }
 
   const path = useDerivedValue(() => {
     const skPath = Skia.Path.Make();
@@ -195,17 +210,16 @@ const StrokeWidthSlider = forwardRef<
   }, [size, translate, color]);
 
   useImperativeHandle(ref, () => ({
-    animateToValue(value) {
-      const toPositionY = interpolate(
-        value,
-        [0, 1],
-        [lowerBound, upperBound],
-        Extrapolation.CLAMP,
-      );
-
-      translate.value = withTiming(toPositionY);
-    },
+    animateToValue: translateToValue,
   }));
+
+  useEffect(() => {
+    const width = getStrokeWidthByType("simple");
+    if (width !== undefined) {
+      translateToValue(width);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <View style={[styles.center, canvasStyle]}>

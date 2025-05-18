@@ -1,8 +1,8 @@
 import { SkImage, SkPath } from "@shopify/react-native-skia";
-import { randomUUID } from "expo-crypto";
 
 import { Vector } from "@commons/types";
 import { rotate2D } from "@commons/utils/math";
+import { randomUUID } from "@commons/utils/uuid";
 
 import { BLUR_AMOUNT, HIGHLIGHT_OPACITY } from "../constants";
 import { Stroke } from "../types";
