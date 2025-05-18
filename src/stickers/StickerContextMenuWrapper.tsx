@@ -6,10 +6,10 @@ import Animated, {
   runOnUI,
   useAnimatedRef,
 } from "react-native-reanimated";
-import { randomUUID } from "expo-crypto";
 import { useShallow } from "zustand/react/shallow";
 
 import { Vector } from "@commons/types";
+import { randomUUID } from "@commons/utils/uuid";
 import { useRecordStore } from "@commons/store/useRecordStore";
 import { useStickerStore } from "@stickers/store/stickerStore";
 import {
@@ -18,7 +18,6 @@ import {
 } from "@stickers/utils/emitter";
 
 import StickerOptionsMenu from "./components/menu/StickerContextMenu";
-
 import { StickerContextMenuRefType } from "./utils/types";
 
 const StickerContextMenuWrapper = (props: React.PropsWithChildren) => {

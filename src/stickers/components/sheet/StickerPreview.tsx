@@ -1,9 +1,9 @@
 import React from "react";
 import { Image, Pressable, StyleSheet } from "react-native";
-import { randomUUID } from "expo-crypto";
 
-import { useCustomDimensions } from "@commons/hooks/useCustomsDimensions";
 import { theme } from "@commons/theme";
+import { randomUUID } from "@commons/utils/uuid";
+import { useCustomDimensions } from "@commons/hooks/useCustomsDimensions";
 
 import { useStickerStore } from "@stickers/store/stickerStore";
 import { emitCloseStickerBottomSheet } from "@stickers/utils/emitter";

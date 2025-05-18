@@ -8,9 +8,9 @@ import Animated, {
 } from "react-native-reanimated";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { Canvas, Path, Skia } from "@shopify/react-native-skia";
-import { randomUUID } from "expo-crypto";
 import { useShallow } from "zustand/react/shallow";
 
+import { randomUUID } from "@commons/utils/uuid";
 import { useVector } from "@commons/hooks/useVector";
 import { useStrokeWidthStore } from "@freehand-draw/store/useStrokeWidthStore";
 import { useStrokeStore } from "@freehand-draw/store/useStrokeStore";
@@ -68,6 +68,7 @@ const CircleShapePreview: React.FC<CircleShapePreviewProps> = ({
       color: color.value,
       path: path.value,
       strokeWidth: strokeWidth.value,
+      isTap: false,
     };
 
     strokeStore.add(newStroke);

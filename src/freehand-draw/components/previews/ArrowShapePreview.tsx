@@ -17,9 +17,9 @@ import {
   PanGestureHandlerEventPayload,
 } from "react-native-gesture-handler";
 import { Canvas, Path, Skia } from "@shopify/react-native-skia";
-import { randomUUID } from "expo-crypto";
 import { useShallow } from "zustand/react/shallow";
 
+import { randomUUID } from "@commons/utils/uuid";
 import { useVector } from "@commons/hooks/useVector";
 import { useRecordStore } from "@commons/store/useRecordStore";
 import { useStrokeStore } from "@freehand-draw/store/useStrokeStore";

@@ -14,9 +14,9 @@ import {
   Path,
   Skia,
 } from "@shopify/react-native-skia";
-import { randomUUID } from "expo-crypto";
 import { useShallow } from "zustand/react/shallow";
 
+import { randomUUID } from "@commons/utils/uuid";
 import { useVector } from "@commons/hooks/useVector";
 import { useStrokeWidthStore } from "@freehand-draw/store/useStrokeWidthStore";
 import { useStrokeStore } from "@freehand-draw/store/useStrokeStore";
