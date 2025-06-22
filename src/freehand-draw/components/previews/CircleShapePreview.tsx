@@ -17,7 +17,7 @@ import { useStrokeStore } from "@freehand-draw/store/useStrokeStore";
 import { useRecordStore } from "@commons/store/useRecordStore";
 import { useShapeStore } from "@freehand-draw/store/useShapeStore";
 
-import { getNormalizedAngle } from "@commons/utils/math";
+import { normalizeAngle } from "@commons/utils/math";
 import { INDICATOR_SIZE, MIN_SHAPE_RADIUS } from "@freehand-draw/constants";
 
 import { Size, Vector } from "@commons/types";
@@ -130,7 +130,7 @@ const CircleShapePreview: React.FC<CircleShapePreviewProps> = ({
       const toX = indicatorOffset.x.value + e.translationX;
       const toY = indicatorOffset.y.value + e.translationY;
 
-      const currentAngle = getNormalizedAngle(toX, toY);
+      const currentAngle = normalizeAngle(Math.atan2(toY, toX));
       const currentRadius = Math.max(MIN_SHAPE_RADIUS, Math.hypot(toX, toY));
 
       radius.value = currentRadius;
