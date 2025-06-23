@@ -38,6 +38,7 @@ import {
   listenToOpenSheetEvent,
 } from "@color-picker/utils/emitter";
 import { useStickerIndexing } from "@stickers/hooks/useStickerIndexing";
+import RectangleShapePreview from "@freehand-draw/components/previews/RectangleShapePreview";
 
 type DrawingLayerProps = {
   baseLayer: SkImage;
@@ -215,6 +216,7 @@ const DrawingLayer: React.FC<DrawingLayerProps> = ({
   const isLastACircle = shapes[shapes.length - 1] === "circle";
   const isLastAStar = shapes[shapes.length - 1] === "star";
   const isLastArrow = shapes[shapes.length - 1] === "arrow";
+  const isLastRectangle = shapes[shapes.length - 1] === "rectangle";
 
   return (
     <View style={styles.container}>
@@ -260,6 +262,10 @@ const DrawingLayer: React.FC<DrawingLayerProps> = ({
 
         {strokeStore.activeType === "arrow-shape" && isLastArrow ? (
           <ArrowShapePreview key={shapes.length} canvasSize={canvasSize} />
+        ) : null}
+
+        {strokeStore.activeType === "rectangle-shape" && isLastRectangle ? (
+          <RectangleShapePreview key={shapes.length} canvasSize={canvasSize} />
         ) : null}
 
         {stickerStore.stickers.map((sticker) => {

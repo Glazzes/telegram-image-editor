@@ -54,6 +54,11 @@ export type ArrowShape = {
   headPath: SkPath;
 } & Omit<CommonStrokeProperties, "isTap">;
 
+export type RectangleShape = {
+  type: "rectangle-shape";
+  color: string;
+} & Omit<CommonStrokeProperties, "isTap">;
+
 export type Stroke =
   | SimpleStroke
   | ArrowPath
@@ -63,7 +68,8 @@ export type Stroke =
   | DoubleStroke
   | CircleShape
   | StarShape
-  | ArrowShape;
+  | ArrowShape
+  | RectangleShape;
 
 export interface StrokeWidthSliderRef {
   animateToValue: (value: number) => void;

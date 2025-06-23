@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import Animated, {
+  runOnJS,
   SharedValue,
   useAnimatedStyle,
   useDerivedValue,
@@ -13,6 +14,7 @@ import {
   Path,
   Skia,
 } from "@shopify/react-native-skia";
+import { useShallow } from "zustand/react/shallow";
 
 import { useVector } from "@commons/hooks/useVector";
 import {
@@ -22,9 +24,14 @@ import {
   rotate2D,
 } from "@commons/utils/math";
 import { Size, Vector } from "@commons/types";
+
 import { INDICATOR_SIZE } from "@freehand-draw/constants";
-import { useShallow } from "zustand/react/shallow";
 import { useStrokeWidthStore } from "@freehand-draw/store/useStrokeWidthStore";
+import { useStrokeStore } from "@freehand-draw/store/useStrokeStore";
+import { useRecordStore } from "@commons/store/useRecordStore";
+import { useShapeStore } from "@freehand-draw/store/useShapeStore";
+import { randomUUID } from "@commons/utils/uuid";
+import { SimpleStroke } from "@freehand-draw/types";
 
 type RectangleShapePreviewProps = {
   canvasSize: Size<number>;
@@ -54,10 +61,20 @@ function rotateVectorAroundCenter(
 }
 
 const RectangleShapePreview = ({ canvasSize }: RectangleShapePreviewProps) => {
+  const addRecord = useRecordStore((state) => state.add);
+  const resetShapeStore = useShapeStore((state) => state.resetShapeStore);
+
   const stroke = useStrokeWidthStore(
     useShallow((state) => ({
       color: state.color,
       width: state.strokeWidth,
+    })),
+  );
+
+  const strokeStore = useStrokeStore(
+    useShallow((state) => ({
+      add: state.add,
+      setActiveType: state.setActiveType,
     })),
   );
 
@@ -98,6 +115,26 @@ const RectangleShapePreview = ({ canvasSize }: RectangleShapePreviewProps) => {
 
     return p;
   }, [topLeft, topRight, bottomLeft, bottomRight, canvasSize]);
+
+  function saveShapeAsStroke() {
+    const id = randomUUID();
+    const newStroke: SimpleStroke = {
+      type: "simple",
+      id: id,
+      color: stroke.color.value,
+      path: path.value,
+      strokeWidth: stroke.width.value,
+      isTap: false,
+    };
+
+    strokeStore.add(newStroke);
+    addRecord({ type: "stroke", id: id });
+  }
+
+  function unmountComponent() {
+    strokeStore.setActiveType("simple");
+    resetShapeStore();
+  }
 
   function onStart() {
     "worklet";
@@ -220,6 +257,7 @@ const RectangleShapePreview = ({ canvasSize }: RectangleShapePreviewProps) => {
       canTranslate.value = isWithinBounds;
 
       if (!isWithinBounds) {
+        runOnJS(unmountComponent)();
       }
     })
     .onUpdate((e) => {
@@ -432,6 +470,11 @@ const RectangleShapePreview = ({ canvasSize }: RectangleShapePreviewProps) => {
       ],
     };
   }, [bottomRight]);
+
+  useEffect(() => {
+    return () => saveShapeAsStroke();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <View style={[styles.root, { ...canvasSize }]}>

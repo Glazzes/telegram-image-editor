@@ -23,6 +23,7 @@ const Appbar = () => {
 
   const strokeStore = useStrokeStore(
     useShallow((state) => ({
+      activeType: state.activeType,
       setActiveType: state.setActiveType,
       deleteById: state.deleteById,
       reset: state.reset,
@@ -49,7 +50,11 @@ const Appbar = () => {
     recordStore.reset();
     stickerStore.reset();
     strokeStore.reset();
-    strokeStore.setActiveType("simple");
+
+    const isShape = strokeStore.activeType.endsWith("shape");
+    if (isShape) {
+      strokeStore.setActiveType("simple");
+    }
   }
 
   const color =

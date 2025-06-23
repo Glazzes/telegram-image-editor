@@ -48,6 +48,7 @@ const StrokeRow: React.FC<StrokeRowProps> = ({ itemSize, availableSpace }) => {
   if (lastShapeType === "circle") shapeIcon = "circle-outline";
   if (lastShapeType === "star") shapeIcon = "star-outline";
   if (lastShapeType === "arrow") shapeIcon = "arrow-top-right";
+  if (lastShapeType === "rectangle") shapeIcon = "square-outline";
 
   const offset = (availableSpace - itemSize) / 2;
   const translateX = useSharedValue<number>(offset);
