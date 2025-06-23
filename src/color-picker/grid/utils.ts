@@ -27,7 +27,7 @@ export const GRID_SHADER = `
     uv.x *= COLUMNS;
     uv.y *= ROWS;
 
-    const float step = (2.0 * PI) / COLUMNS;
+    const float step = (PI * 1.5) / COLUMNS;
 
     float rowIndex = floor(uv.x);
     float columnIndex = floor(uv.y);
@@ -40,16 +40,17 @@ export const GRID_SHADER = `
       return vec4(color, 1.0);
     }
 
-    float hue = mod(PI + (step * rowIndex) + TAU, TAU);
+    // Start from 205 degrees
+    float hue = mod(3.665191429188092 + (step * rowIndex) + TAU, TAU);
 
-    float gain = 0.2; 
+    float gain = 0.35; 
     float luminanceStep = gain / 4;
     float luminance = (BASE_LUMINANCE - gain) + luminanceStep * (columnIndex - 1.0);
     if(columnIndex >= 6.0) {
-      luminance += (columnIndex - 5.0) * 0.02;
+      luminance = 0.5 + (columnIndex - 5.0) * 0.08;
     }
 
-    vec3 color = hslToRgb(hue, 0.9, luminance);
+    vec3 color = hslToRgb(hue, 0.825, luminance);
     return vec4(color, 1.0);
   }
 `;
@@ -80,17 +81,17 @@ export function getColorFromGrid(
     };
   }
 
-  const hueStep = TAU / COLUMNS;
-  const hue = (Math.PI + hueStep * rowIndex + TAU) % TAU;
+  const hueStep = (Math.PI * 1.5) / COLUMNS;
+  const hue = (3.665191429188092 + hueStep * rowIndex + TAU) % TAU;
 
-  const gain = 0.2;
+  const gain = 0.35;
   const luminanceStep = gain / 4;
   let luminance = 0.5 - gain + luminanceStep * (columnIndex - 1.0);
   if (columnIndex >= 6) {
-    luminance += (columnIndex - 5.0) * 0.02;
+    luminance = 0.5 + (columnIndex - 5.0) * 0.08;
   }
 
-  const color = hsl2rgb(hue * RAD2DEG, 0.9, luminance);
+  const color = hsl2rgb(hue * RAD2DEG, 0.825, luminance);
   return {
     color: stringifyRGB(color),
     rawColor: color,

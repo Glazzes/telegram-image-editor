@@ -2,11 +2,11 @@ import { Size, Vector } from "../types";
 
 const TAU = 2 * Math.PI;
 
-export const getNormalizedAngle = (x: number, y: number): number => {
+// Takes an angle and normalizes it from zero to two PI
+export function normalizeAngle(angle: number): number {
   "worklet";
-  const angle = Math.atan2(y, x);
   return (angle + TAU) % TAU;
-};
+}
 
 export const quadraticBezier = (
   p0: Vector<number>,
@@ -53,17 +53,30 @@ export const quadraticBezierTangentAsAngle = (
   return Math.atan2(derivate.y, derivate.x);
 };
 
-export const rotate2D = (
+export function dotProduct(u: Vector<number>, v: Vector<number>): number {
+  "worklet";
+
+  return u.x * v.x + u.y * v.y;
+}
+
+export function normalizeVector(vector: Vector<number>): Vector<number> {
+  "worklet";
+
+  const length = Math.hypot(vector.x, vector.y);
+  return { x: vector.x / length, y: vector.y / length };
+}
+
+export function rotate2D(
   vector: Vector<number>,
   angle: number,
-): Vector<number> => {
+): Vector<number> {
   "worklet";
 
   return {
     x: vector.x * Math.cos(angle) - vector.y * Math.sin(angle),
     y: vector.x * Math.sin(angle) + vector.y * Math.cos(angle),
   };
-};
+}
 
 export const fitContainer = (
   aspectRatio: number,

@@ -17,7 +17,7 @@ I've always dreamed of replicating it's functionaties and unveiling its secrets,
 ## Features
 - Free hand drawing
     - 6 different pencils: basic, basic-arrow, highlight, magic wand, blur and eraser.
-    - 3 configurable shapes: circle, star and arrow
+    - 4 configurable shapes: circle, rectangle, star and arrow
 - Color pickers
     - Grid
     - Gamma (Now they call it spectrum)
@@ -84,6 +84,11 @@ npx expo start --clear
 <img style="float: left; margin-right: 10px" width="200px" src="./docs/images/sticker-bottom-sheet.png" alt="Sticker bottom sheet">
 <img style="float: left; margin-right: 10px" width="200px" src="./docs/images/sticker-canvas.png" alt="Sticker on canvas">
 <img style="float: left; margin-right: 10px" width="200px" src="./docs/images/sticker-context-menu.png" alt="Sticker context menu">
+<img style="float: left; margin-right: 10px" width="200px" src="./docs/images/shape-menu.png" alt="Shape context menu">
+<img style="float: left; margin-right: 10px" width="200px" src="./docs/images/shape-circle.png" alt="Circle shape">
+<img style="float: left; margin-right: 10px" width="200px" src="./docs/images/shape-rectangle.png" alt="Rectangle shape">
+<img style="float: left; margin-right: 10px" width="200px" src="./docs/images/shape-star.png" alt="Star shape">
+<img style="float: left; margin-right: 10px" width="200px" src="./docs/images/shape-arrow.png" alt="Arrow shape">
 
 ## License
 [Creative Commons BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)

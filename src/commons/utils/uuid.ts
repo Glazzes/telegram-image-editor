@@ -1,4 +1,4 @@
-// Function written by ChatGTP, is good enough
+// Function written by ChatGTP, it is good enough
 export function randomUUID(): string {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
     const r = (Math.random() * 16) | 0;

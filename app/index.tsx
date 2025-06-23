@@ -13,7 +13,7 @@ export default function App() {
             `https://cdn.jsdelivr.net/npm/canvaskit-wasm@${version}/bin/full/${file}`,
         }}
         getComponent={() => require("../TestComponent")}
-        fallback={<Text>Loading...</Text>}
+        fallback={<Text>Loading editor files...</Text>}
       />
       <StatusBar style="auto" />
     </View>

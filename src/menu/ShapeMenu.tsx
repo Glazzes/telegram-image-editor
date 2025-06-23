@@ -29,6 +29,12 @@ const ShapeMenu = () => {
         />
 
         <ShapeMenuItem
+          strokeType="rectangle-shape"
+          shapeType="rectangle"
+          icon="square-outline"
+        />
+
+        <ShapeMenuItem
           strokeType="star-shape"
           shapeType="star"
           icon="star-outline"

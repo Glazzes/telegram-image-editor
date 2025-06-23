@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export type Shape = "circle" | "star" | "arrow";
+export type Shape = "circle" | "rectangle" | "star" | "arrow";
 
 type ShapeStore = {
   shapeTypes: Shape[];

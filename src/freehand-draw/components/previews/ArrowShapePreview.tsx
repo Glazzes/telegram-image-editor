@@ -27,11 +27,11 @@ import { useShapeStore } from "@freehand-draw/store/useShapeStore";
 import { useStrokeWidthStore } from "@freehand-draw/store/useStrokeWidthStore";
 
 import {
-  getNormalizedAngle,
   getAngleBetweenVectors,
   quadraticBezierTangentAsAngle,
   rotate2D,
   quadraticBezier,
+  normalizeAngle,
 } from "@commons/utils/math";
 
 import { Size, Vector } from "@commons/types";
@@ -52,12 +52,12 @@ const mapToCartesianCoords = (
   return { x, y };
 };
 
-const onStart = (vector: AnimatedVector, offset: AnimatedVector) => {
+function onStart(vector: AnimatedVector, offset: AnimatedVector) {
   "worklet";
 
   offset.x.value = vector.x.value;
   offset.y.value = vector.y.value;
-};
+}
 
 const onUpdate = (
   vector: AnimatedVector,
@@ -240,10 +240,10 @@ const ArrowShapePreview = ({ canvasSize }: ArrowShapePreviewProps) => {
       const pointerX = e.x - control.x.value;
       const pointerY = -1 * (e.y - control.y.value);
 
-      const angle1 = getNormalizedAngle(startX, startY);
-      const angle2 = getNormalizedAngle(endX, endY);
+      const angle1 = normalizeAngle(Math.atan2(startY, startX));
+      const angle2 = normalizeAngle(Math.atan2(endY, endX));
 
-      const currentAngle = getNormalizedAngle(pointerX, pointerY);
+      const currentAngle = normalizeAngle(Math.atan2(pointerY, pointerX));
       const minAngle = Math.min(angle1, angle2);
       const maxAngle = Math.max(angle1, angle2);
 
