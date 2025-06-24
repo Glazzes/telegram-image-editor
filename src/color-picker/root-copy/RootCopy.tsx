@@ -32,7 +32,7 @@ const RootCopy = (_: unknown, ref: React.ForwardedRef<RootCopyRef>) => {
               node.current! as unknown as HTMLElement,
             );
 
-            // 22 is length of "data:image/png;base64,p"
+            // 22 is length of "data:image/png;base64,"
             base64 = base64.slice(22);
 
             const data = Skia.Data.fromBase64(base64);

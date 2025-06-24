@@ -49,7 +49,7 @@ jobs:
           docker stop editor || true
           docker rm editor || true
           docker image rm image-editor:latest || true
-          docker build -f ${{ secrets.PROJECT_PATH }}/DockerFile -t image-editor:latest .
+          docker build -f ${{ secrets.PROJECT_PATH }}/Dockerfile -t image-editor:latest .
           docker run -d --name editor -p 3000:3000 --restart always image-editor:latest
-          rm DockerFile
+          rm Dockerfile
           rm -rf dist
