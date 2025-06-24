@@ -131,6 +131,33 @@ const RectangleShapePreview = ({ canvasSize }: RectangleShapePreviewProps) => {
     addRecord({ type: "stroke", id: id });
   }
 
+  function isPointerWithShape(position: Vector<number>): boolean {
+    "worklet";
+
+    const topLeftTopRight: Vector<number> = {
+      x: topRight.x.value - topLeft.x.value,
+      y: topRight.y.value - topLeft.y.value,
+    };
+
+    const topLeftBottomLeft: Vector<number> = {
+      x: bottomLeft.x.value - topLeft.x.value,
+      y: bottomLeft.y.value - topLeft.y.value,
+    };
+
+    const point: Vector<number> = {
+      x: position.x - topLeft.x.value,
+      y: position.y - topLeft.y.value,
+    };
+
+    const lenght1 = dotProduct(topLeftTopRight, topLeftTopRight);
+    const lenght2 = dotProduct(topLeftBottomLeft, topLeftBottomLeft);
+
+    const dot1 = dotProduct(point, topLeftTopRight) / lenght1;
+    const dot2 = dotProduct(point, topLeftBottomLeft) / lenght2;
+
+    return dot1 >= 0 && dot1 <= 1 && dot2 >= 0 && dot2 <= 1;
+  }
+
   function unmountComponent() {
     strokeStore.setActiveType("simple");
     resetShapeStore();
@@ -228,32 +255,11 @@ const RectangleShapePreview = ({ canvasSize }: RectangleShapePreviewProps) => {
     horizontal.y.value = anchor.y.value - br.y;
   }
 
-  const canvasPan = Gesture.Pan()
+  const shapePan = Gesture.Pan()
     .onStart((e) => {
       onStart();
 
-      const topLeftTopRight: Vector<number> = {
-        x: topRight.x.value - topLeft.x.value,
-        y: topRight.y.value - topLeft.y.value,
-      };
-
-      const topLeftBottomLeft: Vector<number> = {
-        x: bottomLeft.x.value - topLeft.x.value,
-        y: bottomLeft.y.value - topLeft.y.value,
-      };
-
-      const point: Vector<number> = {
-        x: e.x - topLeft.x.value,
-        y: e.y - topLeft.y.value,
-      };
-
-      const lenght1 = dotProduct(topLeftTopRight, topLeftTopRight);
-      const lenght2 = dotProduct(topLeftBottomLeft, topLeftBottomLeft);
-
-      const dot1 = dotProduct(point, topLeftTopRight) / lenght1;
-      const dot2 = dotProduct(point, topLeftBottomLeft) / lenght2;
-
-      const isWithinBounds = dot1 >= 0 && dot1 <= 1 && dot2 >= 0 && dot2 <= 1;
+      const isWithinBounds = isPointerWithShape({ x: e.x, y: e.y });
       canTranslate.value = isWithinBounds;
 
       if (!isWithinBounds) {
@@ -271,6 +277,19 @@ const RectangleShapePreview = ({ canvasSize }: RectangleShapePreviewProps) => {
       bottomLeft.y.value = bottomLeftOffset.y.value + e.translationY;
       bottomRight.x.value = bottomRightOffset.x.value + e.translationX;
       bottomRight.y.value = bottomRightOffset.y.value + e.translationY;
+    });
+
+  // When using pan gesture for tapping purposes it is to slow, therefore a tap gesture is need
+  // so I can ensure the component is unmounted quickly when the user taps outside the shape.
+  const shapeTap = Gesture.Tap()
+    .numberOfTaps(1)
+    .runOnJS(true)
+    .onStart((e) => {
+      const isWithinBounds = isPointerWithShape({ x: e.x, y: e.y });
+
+      if (!isWithinBounds) {
+        unmountComponent();
+      }
     });
 
   const indicatorPan = Gesture.Pan()
@@ -476,9 +495,11 @@ const RectangleShapePreview = ({ canvasSize }: RectangleShapePreviewProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const shapeComposedGesture = Gesture.Exclusive(shapePan, shapeTap);
+
   return (
     <View style={[styles.root, { ...canvasSize }]}>
-      <GestureDetector gesture={canvasPan}>
+      <GestureDetector gesture={shapeComposedGesture}>
         <Canvas style={{ ...canvasSize }}>
           <Path
             path={path}
