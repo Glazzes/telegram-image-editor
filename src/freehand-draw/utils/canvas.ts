@@ -184,7 +184,7 @@ function drawSimple(canvas: SkCanvas, stroke: SimpleStroke, scale: number) {
   canvas.restore();
 }
 
-export function drawStrokesToCanvas(options: StrokeDrawOptions): string {
+export function drawStrokesToCanvas(options: StrokeDrawOptions): void {
   const { surface, strokes, scale, baseLayer } = options;
 
   const canvas = surface.getCanvas();
@@ -209,7 +209,4 @@ export function drawStrokesToCanvas(options: StrokeDrawOptions): string {
     if (stroke.type === "simple") drawSimple(canvas, stroke, scale);
     if (stroke.type === "star-shape") drawCornered(canvas, stroke, scale);
   }
-
-  const snapshot = surface.makeImageSnapshot();
-  return snapshot.encodeToBase64();
 }
