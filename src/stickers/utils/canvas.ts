@@ -41,7 +41,7 @@ export function drawStickersToCanvas(options: Options) {
     const angle = sticker.transform.rotate * RAG2DEG;
     const isFlipped = sticker.transform.rotateY === Math.PI;
 
-    const size = sticker.radius * 2 * relativeScale;
+    const size = sticker.radius * 2 * relativeScale * (1 / Math.SQRT2);
     const x = centerX - size / 2;
     const y = centerY - size / 2;
 
