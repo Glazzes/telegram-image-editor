@@ -25,7 +25,7 @@ const StickerCopy = (props: StickerCopyProps) => {
         { translateX: data.transform.translate.x },
         { translateY: data.transform.translate.y },
         { rotate: `${data.transform.rotate}rad` },
-        { rotateY: `${data.transform.rotateY}` },
+        { rotateY: `${data.transform.rotateY}rad` },
         { scale: 1 / Math.SQRT2 },
       ],
     };

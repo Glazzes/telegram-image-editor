@@ -163,7 +163,7 @@ const Sticker: React.FC<StickerProps> = ({ sticker, canvasSize }) => {
 
   // @ts-ignore
   const stickerStyles = useAnimatedStyle(() => {
-    const resizeScale = (radius.value * 2) / INITIAL_STICKER_SIZE;
+    const resizeScale = (radius.value * 2) / INITIAL_STICKER_SIZE / Math.SQRT2;
 
     return {
       width: INITIAL_STICKER_SIZE,
