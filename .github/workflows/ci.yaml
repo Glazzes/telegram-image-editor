@@ -3,7 +3,6 @@ name: CI
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:
 
 jobs:
   build:
@@ -32,7 +31,7 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: 22
         source: ./dist,./Dockerfile
-        target: /home/ubuntu/projects/editor/
+        target: ${{ secrets.PROJECT_PATH }}
 
   deploy:
     name: Deploy to VPS
